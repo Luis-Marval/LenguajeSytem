@@ -1,0 +1,33 @@
+<?php
+
+use model\Clases;
+use model\utils;
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  try {
+    $datos = [
+      'idioma' => utils::sanear($_POST['idioma']),
+      'nivel' => utils::sanear($_POST['nivel']),
+      'horario' => utils::sanear($_POST['horario']),
+      'tipo' => utils::sanear($_POST['tipo']),
+      'horaInicio' => utils::sanear($_POST['horaInicio']),
+      'horaFin' => utils::sanear($_POST['horaFin']),
+      'clasesXnivel' => utils::sanear($_POST['clasesXnivel']),
+      'dias' => utils::sanear($_POST['dias']),
+    ];
+    $res = (new Clases)->createClase($datos);
+    unset($datos);
+    $_SESSION['success'] = "Clase creada correctamente";
+    header("location:" . PATH . "clases/inscripciones");
+  } catch (\Exception $err) {
+    $_SESSION['error'] = $err->getMessage();
+    header("location:" . PATH . "clases/crear");
+  }
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+  $idiomas = (new Clases)->getIdiomas();
+}
+
+
+require_once("./views/clases/crearClases.view.php");

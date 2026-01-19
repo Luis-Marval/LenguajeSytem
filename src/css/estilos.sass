@@ -1,0 +1,210 @@
+$color-primary: #002366
+$color-secondary: #ac89db
+$color-therceary: #013dac
+$width-filter: 31%
+
+@mixin grow-flex($grow)
+  .grow-#{$grow}
+    flex-grow: $grow
+
+:root
+  --color-primary: #{$color-primary}
+  --color-secondary: #{$color-secondary}
+  --color-therceary: #{$color-therceary}
+
+.app-menu div.srcollbar
+  border-top-width: 0px
+
+.form-select,.form-input,.form-textarea
+  &:focus
+    background-color: rgba(172, 137, 219, 0.2)
+    border-color: #ac89db
+
+.h-2
+  height: 2%
+
+@include grow-flex(2px)
+
+.w-50
+  width: 50%
+
+.inBlock
+  display: inline-block
+
+.btn:hover
+  background: color-mix(in srgb, $color-primary 85%, white 15%)
+  outline: $color-secondary 1.7px solid
+  color: $color-secondary
+  transition: all 0.3s ease
+  cursor: pointer
+
+.w-search
+  border-top-right-radius: 20px
+  border-bottom-right-radius: 20px
+  width: calc(100% - $width-filter)
+  height: 100%
+  position: relative
+  left: 30%
+
+.search-button
+  position: absolute
+  top: 0
+  right: 0
+  width: 20%
+  height: 100%
+  color: white
+  border-radius: 20px
+  margin: 0
+
+.search-filter
+  position: absolute
+  border-top-left-radius: 20px
+  border-bottom-left-radius: 20px
+  z-index: 1
+  width: $width-filter
+
+.bg-viotard
+  color: white
+  width: 100%
+  border-radius: 20px
+  margin: 0
+  height: 100%
+  &:hover
+    color: white
+    outline: $color-primary 1.7px solid
+
+.left-btn
+  background: red
+  border-top-right-radius: 0
+  border-bottom-right-radius: 0
+
+.right-btn
+  background: green
+  border-top-left-radius: 0
+  border-bottom-left-radius: 0
+
+.ser::after
+  background: inherit
+  position: absolute
+  content: ""
+  filter: blur(25px) saturate(1.5)
+  width: 100%
+  height: 100%
+  scale: 1.05
+  z-index: -1
+
+.max-list
+  max-width: 1000px
+
+svg
+  width: 18px
+  height: 18px
+  &.list-accion path
+    fill: $color-secondary
+
+html[data-sidenav-view="sm"]
+  & table
+    max-width: 1250px
+    width: 100%
+    max-height: 300px
+  & .max-list
+    max-width: 1300px
+    max-height: auto
+
+table,
+tbody,
+thead
+  max-width: 900px
+  max-height: 350px
+
+.btn-p-8
+  padding: 8px
+
+tbody
+  display: block
+  overflow-y: auto
+  overflow-x: hidden
+  max-width: 100%
+
+thead
+  max-width: 100%
+
+thead,
+tbody tr 
+  display: table
+  width: 100%
+  table-layout: fixed
+
+.grid-center
+  grid-column: 2/3
+
+.titulo-datos
+  margin-top: 4px
+  background-color: white
+  text-align: center
+  color: white
+  padding: 4px
+  width: 100%
+  display: flex
+  flex-direction: row
+  justify-content: space-evenly
+  padding: 0
+  border: 1px solid black
+
+  & h2,& form
+    flex-grow: 1
+    min-height: 100%
+    color: black
+    border-radius: 0
+    transition: all 0.5s ease
+    &.select
+      background-color: $color-therceary
+      color: white
+    &:hover
+      gap: 5px
+      color: white
+      background-color: $color-therceary
+
+.complete
+  width: 50%
+
+.men-table
+  border-left: 5px solid #013dac55
+  padding-left: 5px
+
+.btn-afiliado
+  border: 1px solid black
+  margin: 0 5px 4px 0
+
+.data
+  border: 1px solid $color-secondary
+  border-top: 0px
+  border-radius: 0 0 20px 20px
+
+.b-top
+  border-top: 1px solid
+
+.borderDark
+  border: 1px solid black
+
+.bd-secondary
+  border-color: rgb(from \$--color-secondary r g b / 50%)
+
+.main-scroll
+  height: 80vh
+  overflow-y: scroll
+
+.rounded
+  border-radius: 20px
+
+.pl-5
+  padding-left: 1.50rem
+
+.negate-access
+  display: flex
+  flex-direction: column
+  flex-wrap: wrap
+  align-content: center
+  justify-content: center
+  height: 100%
+  text-align: center
