@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Asume datos JSON en el body
   try {
     $data = json_decode(file_get_contents('php://input'), true);
+    // Inscribir alumno
     if ($data['action'] == 'inscribir') {
       if (empty($data['periodo_id'])) {
         header('Content-Type:application/json');
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       echo json_encode(['success' => true]);
       die();
     }
-
+    // Cambiar alumno
     if ($data['action'] == 'cambio') {
       $datosQuitar = [
         'estudiante_id' =>  $data['estudiante_id'],
@@ -52,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       die();
     }
 
+    // quitar alumno
     if ($data['action'] == 'quitar') {
       $datos = [
         'estudiante_id' =>  $data['estudiante_id'],
@@ -63,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       die();
     }
 
+    // Listar alumnos
     if ($data['action'] == 'lista') {
       // Retornar la lista de alumnos aptos para inscripción
       try {
@@ -97,15 +100,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($data['action'] == 'buscar_alumno') {
       try {
         $buscar = $data['buscar'] ?? null;
+        $periodo_id = $data['periodo_id'];
         if (empty($buscar)) {
           header('Content-Type:application/json', true, 400);
           echo json_encode(['error' => 'Parámetro de búsqueda vacío']);
           die();
         }
+
         $estudiantes = (new Estudiante)->getEstudiante(['dato' => $buscar]);
         $inscritos = (new Clases)->getAlumnosInscritos($periodo_id);
         $cedulasInscritas = array_column($inscritos, 'cedula');
-        $lista = array_filter($lista, function ($item) use ($cedulasInscritas) {
+        $lista = array_filter($estudiantes, function ($item) use ($cedulasInscritas) {
           // Verificar si la cédula NO está en el array de cédulas inscritas
           return !in_array($item['cedula'], $cedulasInscritas);
         });
@@ -188,7 +193,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $periodoId = $periodoData[0]['id'];
     //Trae la informacion de la clase
     $claseData = (new Clases)->getClase($_GET['idClass']);
-    $lastProfesor = (new Profesores)->lastProfesor($_GET['idClass'], $periodo[0]['id']);
+    $lastProfesor = (new Profesores)->lastProfesor($_GET['idClass'], $periodoId);
+    if (!empty($lastProfesor) && empty($periodoData[0]['idProfesor'])) {
+      (new Clases)->setProfesorPeriodo($periodoId, $lastProfesor);
+    }
   } catch (Exception $err) {
     $_SESSION['error'] = $err->getMessage();
     header('Location:' . PATH . 'clases/inscripciones');

@@ -63,6 +63,19 @@ class Profesores
       $res = $this->conexion->insert('profesores', $datos);
       return true;
     } catch (\PDOException $err) {
+      if (
+        strpos($err, 'Duplicate entry') !== false ||
+        strpos($err, '1062') !== false ||
+        strpos($err, '23000') !== false
+      ) {
+        if (strpos($err, 'telefono') !== false) {
+          throw new \Exception('Numero Telefonico Duplicado, Por favor utilice otro');
+        }
+        if (strpos($err, 'email') !== false) {
+          throw new \Exception('Correo Duplicado, Por favor utilice otro');
+        }
+        return true;
+      }
       throw new \Exception($err->getMessage());
     }
   }
@@ -89,8 +102,8 @@ class Profesores
   {
     $view = "SELECT c.id,p.id,p.idProfesor  from clases c left join Periodo p on p.idClase = c.id  WHERE idClase = :idClase AND p.id < :periodo_id ORDER BY p.id DESC LIMIT 1;";
     try {
-      $res = $this->conexion->query($view, ['idClase' => $clase, 'periodo_id' => $periodo],true);
-      if(empty($res)){
+      $res = $this->conexion->query($view, ['idClase' => $clase, 'periodo_id' => $periodo], true);
+      if (empty($res)) {
         return false;
       }
       return $res[0]['idProfesor'];
@@ -100,4 +113,12 @@ class Profesores
       throw new \Exception($err->getMessage());
     }
   }
+  public  function mailSend($cedula,$clase,$id){
+    try {
+      $this -> conexion->update('Periodo',['idClase' => $clase, 'periodo_id' => $id,'idProfesor' => $cedula],['sendList' => 0]);
+    } catch (\Exception $err) {
+      throw new \Exception($err->getMessage());
+    }    
+  }
 }
+

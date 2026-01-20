@@ -16,60 +16,58 @@
       <?php require_once './views/templates/header.php'; ?>
 
       <main class="main-scroll">
-        <?php if (isset($listas)): ?>
-          <div class="row px-6 main">
-            <div class="card">
-              <div class="card-header flex justify-between items-center  card-header-primary">
-                <p class="title-2">Estudiantes por Inscribir</p>
-              </div>
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table table-bordered text-center dark:border-sky-500" id="tbl">
-                    <thead class="thead-dark">
-                      <tr>
-                        <th>Cedula</th>
-                        <th>Nombre</th>
-                        <th>Telefono</th>
-                        <th>Lenguaje</th>
-                        <th>Nivel</th>
-                        <th>#</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tablaPorInscribir">
-                    </tbody>
-                  </table>
-                  <div class="w-full text-sm text-left text-gray-500 dark:text-gray-200 flex justify-end align-center line0" style="overflow-y: hidden;">
-                    <div class="flex items-center gap-2">
-                      <label for="rowForPageHome" class="whitespace-nowrap">Filas por página:</label>
-                      <select id="rowForPageHome" class="border rounded px-2 py-1 bg-white dark:bg-gray-800">
-                        <option value="5">5</option>
-                        <option value="10" selected>10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                      </select>
-                    </div>
+        <div class="row px-6 main">
+          <div class="card">
+            <div class="card-header flex justify-between items-center  card-header-primary">
+              <p class="title-2">Estudiantes por Inscribir</p>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered text-center dark:border-sky-500" id="tbl">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th>Cedula</th>
+                      <th>Nombre</th>
+                      <th>Telefono</th>
+                      <th>Lenguaje</th>
+                      <th>Nivel</th>
+                      <th>#</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaPorInscribir">
+                  </tbody>
+                </table>
+                <div class="w-full text-sm text-left text-gray-500 dark:text-gray-200 flex justify-end align-center line0" style="overflow-y: hidden;">
+                  <div class="flex items-center gap-2">
+                    <label for="rowForPageHome" class="whitespace-nowrap">Filas por página:</label>
+                    <select id="rowForPageHome" class="border rounded px-2 py-1 bg-white dark:bg-gray-800">
+                      <option value="5">5</option>
+                      <option value="10" selected>10</option>
+                      <option value="20">20</option>
+                      <option value="50">50</option>
+                    </select>
+                  </div>
 
-                    <p id="infoRange">0-0 de 0</p>
+                  <p id="infoRange">0-0 de 0</p>
 
-                    <div>
-                      <button id="btnPrev" style="width: 20px;" title="Pagina Anterior" disabled>
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z" />
-                        </svg>
-                      </button>
-                      <button id="btnNext" style="width: 20px;" title="Siguiente Pagina">
-                        <svg class="" focusable="false" viewBox="0 0 24 24">
-                          <path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path>
-                        </svg>
-                      </button>
-                    </div>
+                  <div>
+                    <button id="btnPrev" style="width: 20px;" title="Pagina Anterior" disabled>
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z" />
+                      </svg>
+                    </button>
+                    <button id="btnNext" style="width: 20px;" title="Siguiente Pagina">
+                      <svg class="" focusable="false" viewBox="0 0 24 24">
+                        <path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"></path>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        <?php endif; ?>
-<!--         <div class="row px-6">
+        </div>
+        <!--         <div class="row px-6">
           <div class="col-lg-6 p-r">
             <div class="card">
               <div class="card-header card-header-primary">
@@ -96,7 +94,7 @@
 
   </div>
   <script>
-/*     const medicamentos = new ApexCharts(document.querySelector("#ProductosVendidos"), {
+    /*     const medicamentos = new ApexCharts(document.querySelector("#ProductosVendidos"), {
       series: [{
         name: 'Ingles',
         data: [44, 55, 41, 67, 22, 43]
@@ -227,8 +225,9 @@
 
   <script>
     // Datos que vienen de PHP
-    const lista = Array.isArray(<?php echo json_encode($listas ?? []); ?>) ?
-      <?php echo json_encode($listas ?? []); ?> : [];
+    const lista = <?php echo json_encode($listas); ?>;
+    const status = <?php echo json_encode($status); ?>;
+
 
     // Elementos del DOM
     const tablaBody = document.getElementById("tablaPorInscribir");
@@ -260,6 +259,16 @@
       // Des/habilitar botones
       btnPrev.disabled = currentPage <= 1;
       btnNext.disabled = currentPage >= totalPages || totalPages === 0;
+
+      if(status == 0){
+        tablaBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center text-red-600 font-bold">
+            No han iniciado las incripciones
+          </td>
+        </tr>`;
+        return;
+      }
 
       if (totalRows === 0) {
         tablaBody.innerHTML = `

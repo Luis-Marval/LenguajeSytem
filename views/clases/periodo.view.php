@@ -316,19 +316,23 @@ echo $parte1; ?>
         const tbody = document.getElementById('tabla-alumnos');
         tbody.innerHTML = '';
         if (lista.length === 0) {
+          console.log(lista);
           const tr = document.createElement('tr');
           tr.className = 'text-black font-semibold font-sans';
           tr.innerHTML = '<th colspan="6">No hay alumnos aptos</th>';
           tbody.appendChild(tr);
-          return;
+        } else {
+
+          lista.forEach(item => {
+            console.log(item)
+            tr = addTable(item)
+            tbody.appendChild(tr);
+          });
         }
-        lista.forEach(item => {
-          console.log(item)
-          tr = addTable(item)
-          tbody.appendChild(tr);
-        });
         // abrir modal para mostrar alumnos
         document.getElementById('modal-producto').classList.remove('hidden');
+
+        return;
       })
       .catch(err => {
         console.error(err);
@@ -352,7 +356,8 @@ echo $parte1; ?>
         },
         body: JSON.stringify({
           action: 'buscar_alumno',
-          buscar: query
+          buscar: query,
+          periodo_id: periodo_id,
         })
       })
       .then(r => r.json())

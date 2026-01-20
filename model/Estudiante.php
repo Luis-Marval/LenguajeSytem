@@ -29,19 +29,14 @@ class Estudiante
   {
     try {
       $table = "select * from estudiantes";
-      if ((empty($limit) && !empty($dato))) {
-        $searchData = array_key_first($dato);
-        $res = $this->conexion->query("$table where $searchData = ? limit 1", $dato);
-        return $res;
-      }
-      $min = $limit["min"] ?? 0;
-      $max = $limit["max"] ?? 10;
       if (!empty($dato)) {
         $table .= ' WHERE nombre LIKE :dato OR apellido LIKE :dato OR cedula LIKE :dato OR email LIKE :dato OR telefono LIKE :dato';
         $datoString = $dato['dato'];
         $dato['dato'] = "%$datoString%";
       }
       if (!empty($limit)) {
+        $min = $limit["min"] ?? 0;
+        $max = $limit["max"] ?? 10;
         $table .= " limit $max offset $min";
       }
       $res = $this->conexion->query("$table", $dato, true);

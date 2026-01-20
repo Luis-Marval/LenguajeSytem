@@ -2,8 +2,13 @@
 
 use model\Clases;
 
-
-$listas = (new Clases)->getAlumnosPorInscribir();
+$periodoDate =  (new Clases)->getPeriodoDate();
+  $listas = [];
+$status = 0;
+if (!empty($periodoDate) && $periodoDate[0]['status'] == 1) {
+  $listas = (new Clases)->getAlumnosPorInscribir();
+  $status = 1;
+}
 
 
 /* $cantidad = (sizeof($lista));

@@ -25,7 +25,7 @@ echo $parte1; ?>
             </div>
 
             <div class="mb-2">
-              <label for="horario" class="text-gray-800 text-sm font-medium inline-block mb-2">horario:</label>
+              <label for="horario" class="text-gray-800 text-sm font-medium inline-block mb-2">tipo:</label>
               <select type="text" id="horario" class="form-input" name="horario" title="Seleccione el Tipo de la clase" required>
                 <option value="1">Intensivo</option>
                 <option value="2">Semi-Intensivo</option>
@@ -36,7 +36,7 @@ echo $parte1; ?>
             </div>
 
             <div class="">
-              <label for="tipo" class="text-gray-800 text-sm font-medium inline-block mb-2">tipo:</label>
+              <label for="tipo" class="text-gray-800 text-sm font-medium inline-block mb-2">horario:</label>
               <select type="text" id="tipo" class="form-input" name="tipo" title="Seleccione el Tipo de la clase" required>
                 <option value="matutino">Matutino</option>
                 <option value="vespertino">Vespertino</option>

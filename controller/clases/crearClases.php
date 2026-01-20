@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header("location:" . PATH . "clases/inscripciones");
   } catch (\Exception $err) {
     $_SESSION['error'] = $err->getMessage();
-    header("location:" . PATH . "clases/crear");
+    header("location:" . PATH . "clases/listado");
   }
 }
 

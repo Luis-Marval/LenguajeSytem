@@ -5,7 +5,14 @@ echo $parte1; ?>
 <main class="flex-grow p-6">
   <div class="w-full flex justify-between mb-2">
     <h1 class="text-4xl mb-2 text-primary w-50 i"> Datos del profesor</h1>
-    <a href="<?php echo PATH .'profesor/actualizar?cedula='.$profesor['cedula'];?>" class="btn bg-primary text-white">Actualizar Datos</a>
+    <div class="flex items-center gap-4">
+      <button class="btn cursor-pointer bg-red-600" title="Eliminar Docente" data-cedula="<?php echo $profesor['cedula'] ?>">
+        <svg xmlns="http://www.w3.org/2000/svg" class="text-white" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M7.616 20q-.691 0-1.153-.462T6 18.384V6H5V5h4v-.77h6V5h4v1h-1v12.385q0 .69-.462 1.153T16.384 20zm2.192-3h1V8h-1zm3.384 0h1V8h-1z" />
+        </svg>
+      </button>
+      <a href="<?php echo PATH . 'profesor/actualizar?cedula=' . $profesor['cedula']; ?>" class="btn bg-primary text-white">Actualizar Datos</a>
+    </div>
   </div>
   <div class="alertContainer">
     <?php require_once "./views/templates/message/success.php" ?>
@@ -54,8 +61,81 @@ echo $parte1; ?>
       </div>
     </div>
   </div>
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6">
+      <h3 class="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">Confirmar eliminación</h3>
+      <p id="confirmMessage" class="text-sm text-gray-700 dark:text-gray-300 mb-6">¿Seguro que desea eliminar este docente?</p>
+      <div class="flex justify-end gap-3">
+        <button id="cancelDelete" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600">Cancelar</button>
+        <button id="confirmDelete" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Eliminar</button>
+      </div>
+    </div>
+  </div>
 </main>
 <script>
+  (function() {
+    const modal = document.getElementById('confirmModal');
+    const confirmBtn = document.getElementById('confirmDelete');
+    const cancelBtn = document.getElementById('cancelDelete');
+    const confirmMessage = document.getElementById('confirmMessage');
+
+    let targetUrl = null;
+    let cedula = null
+
+    function showModal(message, url) {
+      targetUrl = url;
+      confirmMessage.textContent = message;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function hideModal() {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      targetUrl = null;
+    }
+
+    // Attach click handlers to all delete buttons
+    document.querySelectorAll('button[title="Eliminar Docente"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        cedula = btn.dataset.cedula;
+        const url = '<?php echo PATH . 'profesor/eliminar' ?>';
+        // try to find row to remove visually after delete
+        showModal('¿Desea eliminar al docente con cédula ' + cedula + '?', url);
+      });
+    });
+
+    cancelBtn.addEventListener('click', hideModal);
+
+    // Confirm deletion: send POST
+    confirmBtn.addEventListener('click', async () => {
+      if (!targetUrl) return hideModal();
+      try {
+        const response = await fetch(targetUrl, {
+          method: 'POST',
+          body: JSON.stringify({
+            cedula: cedula
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success == true) {
+            window.location.href = '<?php echo PATH . 'profesor/listado' ?> '
+          } else {
+            new notificationsMessage('error', 'Profesor no se pudo eliminar');
+            hideModal();
+          }
+        } else {
+          hideModal();
+          new notificationsMessage('error', 'Error al comunicarse con el servidor.');
+        }
+      } catch (err) {
+        hideModal();
+        new notificationsMessage('error', err.message)
+      }
+    });
+  })();
   const cedula = document.getElementById("cedula");
   const btn = document.getElementById("eBtn");
   if (btn) {

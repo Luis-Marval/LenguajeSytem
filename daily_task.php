@@ -11,7 +11,6 @@ spl_autoload_register(function ($className) {
   }
   return false;
 });
-var_dump($_ENV);
 
 use model\Clases;
 use model\Reportes;
@@ -63,9 +62,9 @@ try {
       <h2 class="text-center">IVL</h2>
       <h3 class="text-center">Listado de alumnos</h3>
       <h3 class="text-center">Idioma:<?php echo $claseData[0]['name']; ?> </h3>
+      <h3 class="text-center"> Nivel:<?php echo $claseData[0]['nivel']; ?> Horario:<?php echo $claseData[0]['tipo']; ?> Tipo:<?php echo $claseData[0]['horario']; ?></h3>
       <h4 class="text-center">PROFESOR(A): <?php echo $profesor['nombre'] . " " . $profesor['apellido'] . " " . $profesor['cedula'] ?></h4>
       <table>
-        <h3 class="text-center"> Nivel:<?php echo $claseData[0]['nivel']; ?> Horario:<?php echo $claseData[0]['horario']; ?> Tipo:<?php echo $claseData[0]['tipo']; ?></h3>
         <thead class="">
           <tr>
             <th scope="col">#</th>
@@ -137,6 +136,7 @@ try {
         'status' => 'success',
         'message' => 'PDF generado y enviado correctamente'
       ];
+      (new Profesores) -> mailSend($profesor['cedula'],$periodo[0]["idClase"],$id);
     } catch (Exception $e) {
       $results[] = [
         'periodo' => $id ?? 'Desconocido',

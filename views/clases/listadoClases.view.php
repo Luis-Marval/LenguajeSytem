@@ -26,8 +26,8 @@ echo $parte1; ?>
             <tr class="">
               <th scope="col" class="px-6 py-3">Idioma</th>
               <th scope="col" class="px-6 py-3">Nivel</th>
-              <th scope="col" class="px-6 py-3">Horario</th>
               <th scope="col" class="px-6 py-3">Tipo</th>
+              <th scope="col" class="px-6 py-3">Horario</th>
               <th scope="col" class="px-6 py-3">Cantidad de clases</th>
               <th scope="col" class="px-6 py-3">Inicio</th>
               <th scope="col" class="px-6 py-3">Fin</th>

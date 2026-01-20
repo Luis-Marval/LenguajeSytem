@@ -23,14 +23,14 @@ echo $parte1; ?>
   <?php if (!$status): ?>
     <div class="card w-full mb-6 p-4">
       <form method="post" action="<?php echo PATH . 'clases/inscripciones' ?>" class="flex flex-wrap gap-4 flex-col items-center">
-        <div class="grid grid-cols-2">
-          <div class="flex flex-col">
-            <label class="text-sm text-gray-700 dark:text-white"">Fecha inicio</label>
-            <input type=" date" name="fechaInicio" required class="form-input dark:text-white" />
+        <div class="grid grid-cols-2 gap-2">
+          <div class="flex flex-col items-center ">
+            <label for="fechaInicio" class="text-sm text-gray-700 dark:text-white"">Fecha inicio</label>
+            <input type="date" name="fechaInicio" id="fechaInicio" required class="form-input dark:text-white" />
           </div>
-          <div class="flex flex-col">
-            <label class="text-sm text-gray-700 dark:text-white"">Fecha fin</label>
-            <input type=" date" name="fechaFin" required class="form-input dark:text-white" />
+          <div class="flex flex-col items-center ">
+            <label for="fechaFin" class="text-sm text-gray-700 dark:text-white"">Fecha fin</label>
+            <input type="date" name="fechaFin" id="fechaFin" required class="form-input dark:text-white" />
           </div>
         </div>
         <div>
@@ -51,8 +51,8 @@ echo $parte1; ?>
               <tr class="">
                 <th scope="col" class="px-6 py-3">Idioma</th>
                 <th scope="col" class="px-6 py-3">Nivel</th>
-                <th scope="col" class="px-6 py-3">Horario</th>
                 <th scope="col" class="px-6 py-3">Tipo</th>
+                <th scope="col" class="px-6 py-3">Horario</th>
                 <th scope="col" class="px-6 py-3">Inicio</th>
                 <th scope="col" class="px-6 py-3">Fin</th>
                 <th scope="col" class="px-6 py-3">Acciones</th>
@@ -138,8 +138,8 @@ echo $parte1; ?>
 
 
 
-  const pages = <?php echo $pages ?>;
-  const page = <?php echo $page ?>;
+  const pages = <?php echo isset($pages)? $pages: 1;?>;
+  const page = <?php echo isset($page)? $page: 1;?>;
 
   document.addEventListener('DOMContentLoaded', function() {
     const filas = document.querySelectorAll('.estudiante-row');

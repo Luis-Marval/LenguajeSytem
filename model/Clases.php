@@ -108,7 +108,7 @@ LEFT JOIN periodoDate pd ON
 
   public function getHistorialClases($limit)
   {
-    $view = "SELECT p.*,p.id as idPeriodo,c.*,i.name AS name,c.clasesXnivel AS clasesXnivel,pd.* FROM Periodo p INNER JOIN profesores prof ON p.idProfesor = prof.cedula INNER JOIN clases c ON p.idClase = c.id INNER JOIN idiomas i ON c.idioma = i.id INNER JOIN periodoDate pd ON p.idDate = pd.id where pd.status = 0 and p.statusPeriodo = 1;";
+    $view = "SELECT p.*,p.id as idPeriodo,c.*,i.name AS name,c.clasesXnivel AS clasesXnivel,pd.* FROM Periodo p INNER JOIN profesores prof ON p.idProfesor = prof.cedula INNER JOIN clases c ON p.idClase = c.id INNER JOIN idiomas i ON c.idioma = i.id INNER JOIN periodoDate pd ON p.idDate = pd.id where pd.status = 0 and p.statusPeriodo = 1 order by p.id DESC;";
     try {
       $min = $limit["min"] ?? 0;
       $max = $limit["max"] ?? 10;
@@ -134,7 +134,7 @@ LEFT JOIN periodoDate pd ON
         $view .= " limit $max offset $min";
       }
       if (!empty($dato)) {
-        return $this->conexion->query($view,$dato,true);
+        return $this->conexion->query($view, $dato, true);
       }
       $res = $this->conexion->query($view);
       return $res;
@@ -245,7 +245,7 @@ LEFT JOIN periodoDate pd ON
         $res = $this->conexion->query($view);
       } else {
         $datos['nivel'] = $datos['nivel'] - 1;
-        $view = "SELECT DISTINCT e.*, c_anterior.Nivel AS nivel_anterior_cursado,ep_anterior.periodo_id  FROM estudiantes e INNER JOIN estudiante_periodo ep_anterior ON e.cedula = ep_anterior.estudiante_id INNER JOIN Periodo p_anterior ON ep_anterior.periodo_id = p_anterior.id INNER JOIN clases c_anterior ON p_anterior.idClase = c_anterior.id WHERE c_anterior.Nivel = :nivel AND c_anterior.tipo = :tipo AND c_anterior.idioma = :idioma AND c_anterior.horario = :horario";
+        $view = "SELECT DISTINCT e.*, c_anterior.Nivel AS nivel_anterior_cursado,ep_anterior.periodo_id  FROM estudiantes e INNER JOIN estudiante_periodo ep_anterior ON e.cedula = ep_anterior.estudiante_id INNER JOIN Periodo p_anterior ON ep_anterior.periodo_id = p_anterior.id INNER JOIN clases c_anterior ON p_anterior.idClase = c_anterior.id WHERE  ep_anterior.id = (SELECT MAX(id) FROM estudiante_periodo WHERE estudiante_id = e.cedula) and c_anterior.Nivel = :nivel AND c_anterior.tipo = :tipo AND c_anterior.idioma = :idioma AND c_anterior.horario = :horario";
         $res = $this->conexion->query($view, $datos, true);
       }
       return $res;
@@ -259,7 +259,6 @@ LEFT JOIN periodoDate pd ON
     try {
       $valid = $this->getPeriodoDate();
       if (empty($valid)) return false;
-
       $view = "SELECT DISTINCT e.cedula,e.nombre, e.apellido, e.telefono, e.email, c_anterior.Nivel AS nivel,c_anterior.idioma,c_anterior.tipo ,c_anterior.horario 
             FROM
             estudiantes e
