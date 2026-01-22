@@ -4,45 +4,15 @@ require_once "./views/view.struct.php";
 echo $parte1; ?>
 <main class="flex-grow p-6 main-scroll">
   <h1 class="text-4xl mb-2 text-primary w-50 i"> Inscripciones </h1>
-  <?php if ($status): ?>
-    <div class="min-h-min flex justify-between mb-2">
-      <!-- <input type="text" id="buscador-reportes" class="form-control w-64" placeholder="Buscar en los reportes..."> -->
-      <a href="<?php echo PATH . 'clases/crear' ?>" class="btn bg-primary text-white">Crear nueva clase</a>
-      <p>
-        Periodo: <?php echo $periodo['fechaInicio'] . " a " . $periodo['fechaFin']; ?>
-      </p>
-    </div>
-  <?php endif; ?>
 
   <!-- Contenedor de notificaciones -->
   <div class="alertContainer">
     <?php require_once "./views/templates/message/error.php";
     require_once "./views/templates/message/success.php"; ?>
   </div>
-  <!-- Formulario de filtro por fechas: se solicita antes de mostrar la tabla -->
-  <?php if (!$status): ?>
-    <div class="card w-full mb-6 p-4">
-      <form method="post" action="<?php echo PATH . 'clases/inscripciones' ?>" class="flex flex-wrap gap-4 flex-col items-center">
-        <div class="grid grid-cols-2 gap-2">
-          <div class="flex flex-col items-center ">
-            <label for="fechaInicio" class="text-sm text-gray-700 dark:text-white"">Fecha inicio</label>
-            <input type="date" name="fechaInicio" id="fechaInicio" required class="form-input dark:text-white" />
-          </div>
-          <div class="flex flex-col items-center ">
-            <label for="fechaFin" class="text-sm text-gray-700 dark:text-white"">Fecha fin</label>
-            <input type="date" name="fechaFin" id="fechaFin" required class="form-input dark:text-white" />
-          </div>
-        </div>
-        <div>
-          <button type="submit" class="btn bg-primary text-white">iniciar inscripciones</button>
-        </div>
-      </form>
-    </div>
-  <?php endif; ?>
 
   <div class="flex flex-col gap-6">
   </div>
-  <?php if ($status): ?>
     <div class="flex flex-col">
       <div class="card w-full">
         <div class="p-3 w-full overflow-x-auto">
@@ -127,9 +97,7 @@ echo $parte1; ?>
       </div>
     </div>
 
-  <?php else: ?>
-    <div class="text-center text-sm text-gray-600">Por favor, seleccione las fechas para iniciar el proceso de inscripcion.</div>
-  <?php endif; ?>
+
 
 </main>
 
