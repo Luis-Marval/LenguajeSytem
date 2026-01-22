@@ -31,6 +31,7 @@ class Clases
       return $res;
     } catch (\Exception $err) {
       $errorMessage = $err->getMessage();
+      var_dump($errorMessage);
       if (
         strpos($errorMessage, 'ya existe una clase') !== false ||
         strpos($errorMessage, 'Duplicate entry') !== false ||
@@ -44,7 +45,7 @@ class Clases
   }
   public function getClase($id)
   {
-    $view = "select * from clases where id = ?";
+    $view = "select c.*,i.name from clases c left join idiomas i on c.idioma = i.id where c.id = ? limit 1";
     try {
       $res = $this->conexion->query($view, ['id' => $id]);
       return $res;
@@ -67,15 +68,22 @@ class Clases
     };
   }
 
-  public function getClasesPeriodos($id = 0, $limit = [])
+  public function getClasesPeriodos($id = 0, $limit = [], $dato = '')
   {
     $view = "select * from clasesActivas";
     try {
       if ($id == 0) {
+        if (!empty($dato)) {
+          $view .= ' WHERE (horario LIKE :dato OR tipo LIKE :dato OR nivel LIKE :dato OR name LIKE :dato)';
+        }
         if (!empty($limit)) {
           $min = $limit["min"] ?? 0;
           $max = $limit["max"] ?? 10;
           $view .= " limit $max offset $min";
+        }
+        if (!empty($dato)) {
+          $dato = "%$dato%";
+          return $this->conexion->query($view, ['dato' => $dato], true);
         }
         $res = $this->conexion->query($view);
         return $res;
@@ -120,7 +128,7 @@ LEFT JOIN periodoDate pd ON
     };
   }
 
-  public function getListadoClases($limit = [], $dato = [])
+  public function getListadoClases($limit = [], $dato = '')
   {
     $view = "SELECT c.*, i.name FROM lenguajeSystem.clases c left JOIN lenguajeSystem.idiomas i ON c.idioma = i.id";
     try {
@@ -133,7 +141,8 @@ LEFT JOIN periodoDate pd ON
         $view .= " limit $max offset $min";
       }
       if (!empty($dato)) {
-        return $this->conexion->query($view, $dato, true);
+        $dato = "%$dato%";
+        return $this->conexion->query($view, ['dato' => $dato], true);
       }
       $res = $this->conexion->query($view);
       return $res;
@@ -377,7 +386,8 @@ LEFT JOIN periodoDate pd ON
     }
   }
 
-  public function setEndPeriodo($periodoId, $fechaFin){
+  public function setEndPeriodo($periodoId, $fechaFin)
+  {
     $view = "UPDATE Periodo SET finalizacion = ? WHERE id = ?";
     try {
       $this->conexion->query($view, [$fechaFin, $periodoId]);

@@ -3,13 +3,13 @@ $title = "Lista de Clases";
 require_once "./views/view.struct.php";
 echo $parte1; ?>
 
-<main class="flex-grow p-6">
+<main class="flex-grow p-6 main-scroll">
     <?php 
     $titulo = 'Lista de clases';
     $url = 'clases/crear';
     $buttonTitle = 'Crear Clase';
     require_once "./views/templates/busqueda.php";
-  ?>
+    ?>
   <!-- Contenedor de notificaciones -->
   <div class="alertContainer">
     <?php require_once "./views/templates/message/error.php";
@@ -28,7 +28,6 @@ echo $parte1; ?>
               <th scope="col" class="px-6 py-3">Nivel</th>
               <th scope="col" class="px-6 py-3">Tipo</th>
               <th scope="col" class="px-6 py-3">Horario</th>
-              <th scope="col" class="px-6 py-3">Cantidad de clases</th>
               <th scope="col" class="px-6 py-3">Inicio</th>
               <th scope="col" class="px-6 py-3">Fin</th>
               <th scope="col" class="px-6 py-3">Acciones</th>
@@ -46,16 +45,13 @@ echo $parte1; ?>
                                                     ?></td>
                   <td scope="col" class="px-6 py-3"><?php echo (new DateTime($lista["horaFin"]))->format('h:i:s a') ?></td>
                   <td scope="col" class="px-6 py-3">
-                    <?php
-                    if (!empty($lista['idPeriodo'])): ?>
-                      <form method="post" action="<?php echo PATH . 'clases/listadoClase' ?>" class="inline-block">
-                        <button value="<?php echo $lista['idPeriodo'] ?>" name="idPeriodo" title="Generar Listado">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="list-accion" width="24" height="24" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M18 3H6v4h12m1 5a1 1 0 0 1-1-1a1 1 0 0 1 1-1a1 1 0 0 1 1 1a1 1 0 0 1-1 1m-3 7H8v-5h8m3-6H5a3 3 0 0 0-3 3v6h4v4h12v-4h4v-6a3 3 0 0 0-3-3"></path>
-                          </svg>
+                      <form method="get" action="<?php echo PATH . 'clases/listado' ?>" class="inline-block">
+                        <button value="<?php echo $lista['id'] ?>" name="idClase" title="Generar Listado">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="list-accion" width="1024" height="1024" viewBox="0 0 1024 1024">
+                          <path fill="currentColor" d="M704 192h160v736H160V192h160v64h384zM288 512h448v-64H288zm0 256h448v-64H288zm96-576V96h256v96z"></path>
+                        </svg>
                         </button>
                       </form>
-                    <?php endif; ?>
                   </td>
                 </tr>
               <?php endforeach; ?>
