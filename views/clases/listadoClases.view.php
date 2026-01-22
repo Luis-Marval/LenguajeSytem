@@ -42,7 +42,6 @@ echo $parte1; ?>
                   <td scope="col" class="px-6 py-3"><?php echo $lista["Nivel"] ?></td>
                   <td scope="col" class="px-6 py-3"><?php echo $lista["horario"] ?></td>
                   <td scope="col" class="px-6 py-3"><?php echo $lista["tipo"] ?></td>
-                  <td scope="col" class="px-6 py-3"><?php echo $lista["clasesXnivel"] ?></td>
                   <td scope="col" class="px-6 py-3"><?php echo (new DateTime($lista["horaInicio"]))->format('h:i:s a')
                                                     ?></td>
                   <td scope="col" class="px-6 py-3"><?php echo (new DateTime($lista["horaFin"]))->format('h:i:s a') ?></td>

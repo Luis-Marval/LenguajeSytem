@@ -31,6 +31,9 @@ $routes = array(
   '/profesor/listado' => '/profesores/list_profesores',
   '/profesor/registro' => '/profesores/registrar_profesor',
 
+  // Pagos
+  '/pagos/listado' => '/pagos/listado',
+
   //otros
   '/Notificaciones/Historial' => '/Notificaciones/Historial',
   '/eliminarUsuario' => '/usuarios/eliminar',

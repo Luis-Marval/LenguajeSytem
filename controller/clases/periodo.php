@@ -3,12 +3,72 @@
 use model\Clases;
 use model\Profesores;
 use model\Estudiante;
+use model\Pagos;
 use model\utils;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Asume datos JSON en el body
   try {
     $data = json_decode(file_get_contents('php://input'), true);
+
+    // Registrar pago inicial
+    if (($data['action']) === 'registrar_pago_inicial') {
+      try {
+        $cedula = $data['estudiante_id'] ?? null;
+        $periodoId = $data['periodo_id'] ?? null;
+        $porcentaje = $data['porcentaje'] ?? null;
+        $comentario = $data['comentario'] ?? null;
+        if ($comentario == null) {
+          if ($porcentaje !== null && $porcentaje == 100) {
+            $comentario = 'Pago del monto Total';
+          }
+          if ($porcentaje !== null && $porcentaje == 60) {
+            $comentario = 'Pago Inicial';
+          }
+        }
+
+        if (empty($cedula) || empty($periodoId) || empty($porcentaje)) {
+          header('Content-Type:application/json', true, 400);
+          echo json_encode(['success' => false, 'error' => 'Faltan parámetros para registrar el pago inicial']);
+          die();
+        }
+        $resEp = (new model\Estudiante)->getEstudiantePeriodo([
+          'estudiante_id' => $cedula,
+          'periodo_id' => $periodoId
+        ]);
+
+        $estudiantePeriodoId = (int)$resEp['id'];
+        $clasesModel = (new model\Clases);
+        $idClass = $clasesModel->getPeriodo($resEp['periodo_id']);
+
+        if (empty($idClass[0]['idClase'])) {
+          header('Content-Type:application/json', true, 404);
+          echo json_encode(['success' => false, 'error' => 'No se encontró la inscripción del estudiante en este periodo']);
+          die();
+        }
+
+        $Clase = (new model\Clases)->getClase($idClass[0]['idClase']);
+        $montoClase = $Clase[0]['Monto'];
+        $pagosModel = new model\Pagos();
+        $pagosModel->registrarPagoInicial($estudiantePeriodoId, $montoClase, [
+          'porcentaje' => $porcentaje,
+          'comentario' => $comentario,
+        ]);
+
+
+        header('Content-Type:application/json');
+        echo json_encode([
+          'success' => true,
+          'estado_pago' => $porcentaje
+        ]);
+        die();
+      } catch (Exception $e) {
+        header('Content-Type:application/json', true, 500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        die();
+      }
+    }
+
     // Inscribir alumno
     if ($data['action'] == 'inscribir') {
       if (empty($data['periodo_id'])) {
@@ -144,6 +204,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die();
       }
     }
+    if ($data['action'] == 'set_Date') {
+      try {
+        $periodoId = $data['periodo_id'] ?? null;
+        $fechaFin = $data['fecha_fin'] ?? null;
+        if (empty($periodoId) || empty($fechaFin)) {
+          header('Content-Type:application/json', true, 400);
+          echo json_encode(['error' => 'Faltan parámetros']);
+          die();
+        }
+        $res = (new Clases)->setEndPeriodo($periodoId, $fechaFin);
+        header('Content-Type:application/json');
+        echo json_encode(['success' => true]);
+        die();
+      } catch (Exception $e) {
+        header('Content-Type:application/json', true, 500);
+        echo json_encode(['error' => $e->getMessage()]);
+        die();
+      }
+    }
   } catch (Exception $err) {
     header('Content-Type:application/json', true, 500);
     echo json_encode(['error' => $err->getMessage()]);
@@ -154,6 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 if (!empty($_GET['get'])) {
   try {
     $inscritos = (new Clases)->getAlumnosInscritos($_GET['get']);
+    
     header('Content-Type:application/json');
     echo json_encode(['data' => $inscritos]);
     die();
@@ -198,8 +278,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
       (new Clases)->setProfesorPeriodo($periodoId, $lastProfesor);
     }
   } catch (Exception $err) {
-    $_SESSION['error'] = $err->getMessage();
-    header('Location:' . PATH . 'clases/inscripciones');
+    $_SESSION['error'] = $err->getMessage();/* 
+    header('Location:' . PATH . 'clases/inscripciones'); */
   }
 } else {
   die();

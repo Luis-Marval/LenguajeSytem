@@ -2,7 +2,7 @@
 $title = "Inscripciones";
 require_once "./views/view.struct.php";
 echo $parte1; ?>
-<main class="flex-grow p-6 relative">
+<main class="flex-grow p-6 relative  main-scroll">
   <!-- Contenedor de notificaciones -->
   <div class="alertContainer">
     <?php require_once "./views/templates/message/error.php";
@@ -13,7 +13,7 @@ echo $parte1; ?>
       <div class="card w-full mb-4">
         <div class="p-3 w-full overflow-x-auto" style="position: relative; overflow: visible;">
           <div id="form-medicamento">
-            <h1>Datos de la Clase</h1>
+            <h1 class=" text-primary dark:text-primary">Datos de la Clase</h1>
             <div class="w-full grid grid-cols-4 gap-4">
               <div class="">
                 <label for="idioma" class="text-gray-800 text-sm font-medium inline-block mb-2">Idioma:</label>
@@ -36,34 +36,40 @@ echo $parte1; ?>
             </div>
           </div>
           <div>
-            <div class="grid grid-cols-1">
+            <div class="grid grid-cols-2 gap-3">
               <div class="autocomplete-container">
                 <label for="input-principio" class="text-gray-800 text-sm font-medium inline-block mb-2">Profesor</label>
                 <input type="text" class="form-select" id="input-principio" title="Ingresa el profesor" required name="principio" autocomplete="off" value="">
                 <div id="dropdown-options" class="dropdown-options"></div>
                 <input type="hidden" id="periodo" value="<?php echo $periodo[0]['id'] ?>" name="periodo">
               </div>
+              <div class="">
+                <label for="input-date" class="text-gray-800 text-sm font-medium inline-block mb-2">Fecha de Finalizacion</label>
+                <input type="date" class="form-input" id="input-date" title="Ingresa la fecha de finalizacion" required autocomplete="off" value="<?php if (!empty($periodoData[0]['finalizacion'])) echo $periodoData[0]['finalizacion'] ?>" onchange="setDate()">
+                <input type="hidden" id="periodo" value="<?php echo $periodo[0]['id'] ?>" name="periodo">
+              </div>
             </div>
-
           </div>
         </div>
       </div>
       <div class="card w-full mt-2">
         <div class="flex justify-between w-full items-center px-2">
-          <h2 class="text-black align-middle"> Alumnos Inscritos</h2>
+          <h2 class=" text-primary dark:text-primary align-middle"> Alumnos Inscritos</h2>
           <button type="button" id="agregar"
             class="btn mt-2 mb-2 bg-primary text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
             +
           </button>
         </div>
         <table class="table-auto min-w-full w-full mt-4 mb-2">
-          <thead class="text-xs text-gray-700 bg-gray-200 dark:bg-gray-700 dark:text-gray-400  mb-2">
-            <tr class="text-black text-sm font-semibold font-sans">
+          <thead class="text-xs text-gray-600 bg-gray-100 dark:bg-gray-700 dark:text-gray-400  mb-2">
+            <tr class="text-sm font-semibold font-sans  py-1" style="    border-top-width: 5px;
+    border-bottom-width: 5px;
+    border-color: rgb(243 244 246);">
               <th>Cedula</th>
               <th>Nombre</th>
-              <th>Apellido</th>
               <th>Correo</th>
               <th>Telefono</th>
+              <th>Pago</th>
               <th>#</th>
             </tr>
           </thead>
@@ -90,10 +96,9 @@ echo $parte1; ?>
       <div class="card w-full">
         <table class="table-auto min-w-full w-full mt-4">
           <thead class="text-xs text-gray-700 bg-gray-200 dark:bg-gray-700 dark:text-gray-400 mb-2">
-            <tr class="text-black text-sm font-semibold font-sans">
+            <tr class=" text-sm font-semibold font-sans">
               <th>Cedula</th>
               <th>Nombre</th>
-              <th>Apellido</th>
               <th>Correo</th>
               <th>Telefono</th>
               <th>#</th>
@@ -106,6 +111,36 @@ echo $parte1; ?>
     </div>
   </div>
 </main>
+
+<!-- Modal para registrar pago inicial -->
+<div id="modal-pago" class="hidden absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center ">
+  <div class="bg-white p-6 rounded-xl" style="max-width:420px; width:90%;">
+    <div class="flex justify-between items-start mb-4">
+      <h2 class="text-xl text-black font-bold">Registrar pago inicial</h2>
+      <button onclick="cerrarModalPago()" style="background-color: #dc2626; color: white; padding: 6px 12px; font-size: 14px; font-weight: bold; border-radius: 4px; border: none; cursor: pointer;">X</button>
+    </div>
+    <form onsubmit="enviarPagoInicial(event)">
+      <p class="mb-2 text-black"><span id="pago-cedula-label"></span></p>
+      <div class="mb-3">
+        <label class="block text-gray-700 text-sm font-bold mb-1" for="pago-porcentaje">Porcentaje</label>
+        <select id="pago-porcentaje" class="form-select w-full" required>
+          <option value="">Seleccione...</option>
+          <option value="60">60% (pendiente)</option>
+          <option value="100">100% (completo)</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-1" for="pago-comentario">Comentario (opcional)</label>
+        <textarea id="pago-comentario" class="form-input w-full" rows="2"></textarea>
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button type="button" onclick="cerrarModalPago()" class="btn bg-gray-300">Cancelar</button>
+        <button type="submit" class="btn bg-primary text-white">Guardar pago</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="confirm-change-modal" class="hidden absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center ">
   <div class="bg-white p-6 rounded-xl" style="max-width:520px; width:90%;">
     <div class="flex justify-between items-start mb-4">
@@ -129,6 +164,43 @@ echo $parte1; ?>
   const input = document.getElementById("input-principio");
   const dropdown = document.getElementById("dropdown-options");
   const classData = <?php echo json_encode($claseData); ?>;
+
+  // Función vacía que se ejecuta al cambiar la fecha de finalización
+  function setDate() {
+    const inputDate = document.getElementById('input-date');
+    fechaFin = inputDate ? inputDate.value : null;
+    if (fechaFin == null) {
+      return
+    }
+    fetch('<?php echo CompletePath ?>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'set_Date',
+          periodo_id: periodo_id,
+          fecha_fin: fechaFin,
+        })
+      })
+      .then(r => r.json())
+      .then(resp => {
+        console.log(resp)
+        if (resp && resp.success) {
+          // feedback mínimo: deshabilitar input y mostrar mensaje
+          input.classList.add('bg-green-50');
+          actualizarEstadoBotonAgregar();
+          new notificationsMessage('success', 'Fecha asignada correctamente');
+
+        } else {
+          new notificationsMessage('error', resp.error || 'No se pudo asignar la Fecha');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        new notificationsMessage('error', 'Error al asignar Fecha');
+      });
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -246,6 +318,7 @@ echo $parte1; ?>
     dropdown.style.display = "block";
   }
 
+
   // Ocultar dropdown al hacer clic fuera
   document.addEventListener("click", (e) => {
     if (e.target !== input) {
@@ -274,13 +347,24 @@ echo $parte1; ?>
     const apellido = item.apellido || '';
     const correo = item.email || '';
     const telefono = item.telefono || '';
+    const pagoTag = (alumno.estado_pago !== null) ? `<span class="bg-success/25 text-success" style=" padding: 7.5px; border-radius: 25px;">${alumno.estado_pago}%</span>` : `<span class="bg-warning/25 text-warning" style=" padding: 7.5px; border-radius: 25px;">Pendiente</span>`;
+    tr.className = 'text-black font-semibold font-sans';
+    const botonPago = (alumno.estado_pago === null || alumno.estado_pago === undefined) ?
+      `<button class="btn bg-green-600 text-white hover:text-white px-2 py-1 rounded col-start-2" onclick="abrirModalPago('${ced}')"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6C7.03 6 2 7.546 2 10.5v4C2 17.454 7.03 19 12 19s10-1.546 10-4.5v-4C22 7.546 16.97 6 12 6m-8 8.5v-1.197a10 10 0 0 0 2 .86v1.881c-1.312-.514-2-1.126-2-1.544m12 .148v1.971c-.867.179-1.867.31-3 .358v-2a22 22 0 0 0 3-.329m-5 2.33a19 19 0 0 1-3-.358v-1.971c.959.174 1.972.287 3 .33zm7-.934v-1.881a10 10 0 0 0 2-.86V14.5c0 .418-.687 1.03-2 1.544M12 13c-5.177 0-8-1.651-8-2.5S6.823 8 12 8s8 1.651 8 2.5s-2.823 2.5-8 2.5"/></svg></button>` : '';
+    const size = (alumno.estado_pago === null || alumno.estado_pago === undefined) ?
+      `col-start-3` : 'col-start-2 col-end-4';
+    const quitarButton = (alumno.estado_pago !== null || alumno.estado_pago !== undefined) ?
+      `disabled` : '';
     tr.innerHTML = `
             <th id="cedula+${cedula}">${cedula}</th>
-            <th id="nombre+${cedula}">${nombre}</th>
-            <th id="apellido+${cedula}">${apellido}</th>
+            <th id="nombre+${cedula}">${nombre} ${apellido}</th>
             <th id="correo+${cedula}">${correo}</th>
             <th id="telefono+${cedula}">${telefono}</th>
-            <th><button class="btn-inscripcion bg-primary text-white px-2 py-1 rounded" data-inscrito="0" onclick="toggleInscripcion('${cedula}', this)">Inscribir</button></th>
+            <th id="pago+${cedula}">Pendiente</th>
+            <th class="grid grid-cols-4 gap-1 items-center justify-center">
+${botonPago}
+              <button class="btn bg-red-600 text-white  px-2 py-1 rounded ${size} ${quitarButton}"  onclick="quitarAlumnoConValidacion('${ced}', ${periodo_id}, this)">X</button>
+            </th>
           `;
     tr.classList.add('mb-2');
     return tr
@@ -441,6 +525,15 @@ echo $parte1; ?>
   }
 
 
+  function quitarAlumnoConValidacion(cedula, periodoId, btn = null) {
+    const celdaPago = document.getElementById(`pago-${cedula}`);
+    if (celdaPago && celdaPago.textContent && celdaPago.textContent.trim() !== 'Pendiente') {
+      new notificationsMessage('error', 'No se puede quitar al estudiante porque ya tiene un pago registrado');
+      return;
+    }
+    quitarAlumno(cedula, periodoId, btn);
+  }
+
   function quitarAlumno(cedula, periodoId, btn = null) {
     fetch('<?php echo CompletePath ?>', {
         method: 'POST',
@@ -570,14 +663,26 @@ echo $parte1; ?>
           const apellido = alumno.apellido || '';
           const correo = alumno.email || '';
           const telefono = alumno.telefono || '';
+          const txt =  (alumno.estado_pago == 60)? '60% (pendiente)':'100% (Completo)';
+
+          const pagoTag = (alumno.estado_pago !== null) ? `<span class="bg-success/25 text-success" style=" padding: 7.5px; border-radius: 25px;">${txt}</span>` : `<span class="bg-warning/25 text-warning" style=" padding: 7.5px; border-radius: 25px;">Pendiente</span>`;
           tr.className = 'text-black font-semibold font-sans';
+          const botonPago = (alumno.estado_pago === null || alumno.estado_pago === undefined) ?
+            `<button class="btn bg-green-600 text-white hover:text-white px-2 py-1 rounded col-start-2" onclick="abrirModalPago('${ced}')"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6C7.03 6 2 7.546 2 10.5v4C2 17.454 7.03 19 12 19s10-1.546 10-4.5v-4C22 7.546 16.97 6 12 6m-8 8.5v-1.197a10 10 0 0 0 2 .86v1.881c-1.312-.514-2-1.126-2-1.544m12 .148v1.971c-.867.179-1.867.31-3 .358v-2a22 22 0 0 0 3-.329m-5 2.33a19 19 0 0 1-3-.358v-1.971c.959.174 1.972.287 3 .33zm7-.934v-1.881a10 10 0 0 0 2-.86V14.5c0 .418-.687 1.03-2 1.544M12 13c-5.177 0-8-1.651-8-2.5S6.823 8 12 8s8 1.651 8 2.5s-2.823 2.5-8 2.5"/></svg></button>` : '';
+          const size = (alumno.estado_pago === null || alumno.estado_pago === undefined) ?
+            `col-start-3 bg-red-600 ` : 'col-start-2 col-end-4 bg-gray-300';
+          const quitarButton = (alumno.estado_pago !== null || alumno.estado_pago !== undefined) ?
+            `disabled` : '';
           tr.innerHTML = `
             <th>${ced}</th>
-            <th>${nombre}</th>
-            <th>${apellido}</th>
+            <th>${nombre} ${apellido}</th>
             <th>${correo}</th>
             <th>${telefono}</th>
-            <th><button class="btn bg-red-600 text-white px-2 py-1 rounded" onclick="quitarAlumno('${ced}', ${periodo_id}, this)">Quitar</button></th>
+            <th id="pago-${ced}">${pagoTag}</th>
+            <th class="grid grid-cols-4 gap-1 items-center justify-center">
+${botonPago}
+              <button class="btn text-white  px-2 py-1 rounded ${size}"  onclick="quitarAlumnoConValidacion('${ced}', ${periodo_id}, this)">X</button>
+            </th>
           `;
           tr.classList.add('mb-2')
           tbody.appendChild(tr);
@@ -604,5 +709,79 @@ echo $parte1; ?>
 
   // Carga inicial al abrir modal/página
   document.addEventListener('DOMContentLoaded', refrescarLista);
+
+  // --- Gestión de pagos ---
+  let cedulaActualPago = null;
+
+  function abrirModalPago(cedula) {
+    cedulaActual = cedula;
+    const label = document.getElementById('pago-cedula-label');
+    if (label) {
+      label.textContent = `Estudiante: ${cedula}`;
+    }
+    const porcentaje = document.getElementById('pago-porcentaje');
+    const comentario = document.getElementById('pago-comentario');
+    if (porcentaje) porcentaje.value = '';
+    if (comentario) comentario.value = '';
+
+    const modal = document.getElementById('modal-pago');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function cerrarModalPago() {
+    const modal = document.getElementById('modal-pago');
+    if (modal) modal.classList.add('hidden');
+    cedulaActual = null;
+  }
+
+  function enviarPagoInicial(e) {
+    e.preventDefault();
+    if (!cedulaActual) {
+      new notificationsMessage('error', 'No se ha seleccionado un estudiante');
+      return;
+    }
+    const porcentaje = document.getElementById('pago-porcentaje')?.value;
+    const comentario = document.getElementById('pago-comentario')?.value || null;
+
+    fetch('<?php echo CompletePath ?>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'registrar_pago_inicial',
+          estudiante_id: cedulaActual,
+          periodo_id: periodo_id,
+          porcentaje: porcentaje,
+          comentario: comentario,
+        })
+      })
+      .then(r => r.json())
+      .then(resp => {
+        if (resp && resp.success) {
+          const celda = document.getElementById(`pago-${cedulaActual}`);
+          if (celda) {
+
+            let texto = "";
+            if (resp.estado_pago === '100') {
+              texto = '100%';
+            } else if (resp.estado_pago === '60') {
+              texto = '60% (pendiente)';
+            } else {
+              texto = 'Pendiente';
+            }
+            celda.innerHTML = `<span class="bg-success/25 text-success" style=" padding: 7.5px; border-radius: 25px;">${texto}</span>`
+          }
+          new notificationsMessage('success', 'Pago inicial registrado correctamente');
+          cerrarModalPago();
+        } else {
+          new notificationsMessage('error', resp.error || 'No se pudo registrar el pago inicial');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        new notificationsMessage('error', 'Error al registrar el pago inicial');
+      });
+  }
 </script>
 <?php echo $parte2; ?>

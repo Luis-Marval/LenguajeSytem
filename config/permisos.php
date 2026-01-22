@@ -22,6 +22,7 @@ $Permisos = [
   '/profesor/eliminar',
   '/profesor/listado',
   '/profesor/registro',
+  '/pagos/listado',
   '/Notificaciones/Historial',
   '/eliminarUsuario',
   '/cambiarContrasena',

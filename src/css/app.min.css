@@ -7583,7 +7583,7 @@ th.fc-day-header {
 }
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
+  color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
 }
 .hover\:text-yellow-600:hover {
   --tw-text-opacity: 1;
@@ -8386,6 +8386,15 @@ th.fc-day-header {
   }
   .md\:col-start-2 {
     grid-column-start: 2;
+  }
+  .col-start-2 {
+    grid-column-start: 2;
+  }
+  .col-start-3 {
+    grid-column-start: 3;
+  }
+    .col-end-4 {
+    grid-column-end: 4;
   }
   .md\:mx-auto {
     margin-left: auto;

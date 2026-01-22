@@ -31,12 +31,18 @@
       <?php require_once "./views/templates/subMenu/estudiantesMenu.php" ?>
       <?php require_once "./views/templates/subMenu/profesoresMenu.php" ?>
       <?php require_once "./views/templates/subMenu/clasesMenu.php" ?>
-      <li class="menu-item">
-        <a href="<?php echo PATH ?>logout" data-fc-type="collapse" class="menu-link ">
-          <span class="menu-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <li class="menu-item ">
+        <a href="<?php echo PATH ?>pagos/listado" class="menu-link">
+          <span class="menu-icon"><i class="mgc_coin_line"></i></span>
+          <span class="menu-text">Pagos</span>
+        </a>
+      </li>
+      <li class="menu-item absolute bottom-0 pb-3Import">
+        <a href="<?php echo PATH ?>logout" data-fc-type="collapse" class="menu-link text-red">
+          <span class="menu-icon text-red-600"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h7v2zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5z" />
             </svg></span>
-          <span class="menu-text"> Cerrar Sesión </span>
+          <span class="menu-text text-red-600"> Cerrar Sesión </span>
         </a>
       </li>
     </ul>

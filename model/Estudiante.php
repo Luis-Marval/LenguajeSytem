@@ -3,10 +3,8 @@
 namespace model;
 
 use Exception;
-use model\Database;
 use PDOException;
-use model\utils;
-use PDO;
+use model\Database;
 
 class Estudiante
 {
@@ -46,12 +44,22 @@ class Estudiante
       throw new \Exception($err->getMessage());
     }
   }
+
+  public function getEstudiantePeriodo($dato): array|\PDOException
+  {
+    try {
+      return $this->conexion->readOnly('estudiante_periodo',$dato);
+    } catch (\PDOException $err) {
+      throw new \Exception($err->getMessage());
+    }
+  }
+
   public function countEstudiantes($idPeriodo = 0)
   {
-    if($idPeriodo == 0){
+    if ($idPeriodo == 0) {
       $res = $this->conexion->query('SELECT count(*) FROM estudiantes');
-    }else{
-      $res = $this->conexion->query('SELECT count(*) FROM estudiante_periodo where periodo_id = :periodo_id',['periodo_id' => $idPeriodo],true);
+    } else {
+      $res = $this->conexion->query('SELECT count(*) FROM estudiante_periodo where periodo_id = :periodo_id', ['periodo_id' => $idPeriodo], true);
     }
     return $res;
   }
@@ -67,10 +75,10 @@ class Estudiante
         strpos($err, '1062') !== false ||
         strpos($err, '23000') !== false
       ) {
-        if(strpos($err, 'telefono') !== false){
+        if (strpos($err, 'telefono') !== false) {
           throw new \Exception('Numero Telefonico Duplicado, Por favor utilice otro');
         }
-        if(strpos($err, 'email') !== false){
+        if (strpos($err, 'email') !== false) {
           throw new \Exception('Correo Duplicado, Por favor utilice otro');
         }
         return true;
@@ -79,7 +87,7 @@ class Estudiante
     }
   }
 
-    public function updateEstudante($cedula, $datos)
+  public function updateEstudante($cedula, $datos)
   {
     try {
       $res = $this->conexion->update('estudiantes', ['cedula' => $cedula], $datos);
@@ -88,5 +96,4 @@ class Estudiante
       throw new \Exception($err->getMessage());
     }
   }
-
 }

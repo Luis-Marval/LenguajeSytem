@@ -12,8 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       'tipo' => utils::sanear($_POST['tipo']),
       'horaInicio' => utils::sanear($_POST['horaInicio']),
       'horaFin' => utils::sanear($_POST['horaFin']),
-      'clasesXnivel' => utils::sanear($_POST['clasesXnivel']),
-      'dias' => utils::sanear($_POST['dias']),
     ];
     $res = (new Clases)->createClase($datos);
     unset($datos);

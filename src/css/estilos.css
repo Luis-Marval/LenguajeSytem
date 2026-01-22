@@ -145,6 +145,13 @@ tbody tr {
 .grid-center {
   grid-column: 2/3;
 }
+.pb-3Import{
+  padding-bottom: 0.75rem !important;
+}
+.py-1{
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
 .titulo-datos {
   margin-top: 4px;
   background-color: white;

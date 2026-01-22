@@ -86,7 +86,6 @@ class Clases
     c.tipo,
     c.horario,
     c.nivel,
-    c.clasesXnivel,
     c.horaInicio,
     c.horaFin,
     p.id as idPeriodo,
@@ -108,7 +107,7 @@ LEFT JOIN periodoDate pd ON
 
   public function getHistorialClases($limit)
   {
-    $view = "SELECT p.*,p.id as idPeriodo,c.*,i.name AS name,c.clasesXnivel AS clasesXnivel,pd.* FROM Periodo p INNER JOIN profesores prof ON p.idProfesor = prof.cedula INNER JOIN clases c ON p.idClase = c.id INNER JOIN idiomas i ON c.idioma = i.id INNER JOIN periodoDate pd ON p.idDate = pd.id where pd.status = 0 and p.statusPeriodo = 1 order by p.id DESC;";
+    $view = "SELECT p.*,p.id as idPeriodo,c.*,i.name AS name,pd.* FROM Periodo p INNER JOIN profesores prof ON p.idProfesor = prof.cedula INNER JOIN clases c ON p.idClase = c.id INNER JOIN idiomas i ON c.idioma = i.id INNER JOIN periodoDate pd ON p.idDate = pd.id where pd.status = 0 and p.statusPeriodo = 1 order by p.id DESC;";
     try {
       $min = $limit["min"] ?? 0;
       $max = $limit["max"] ?? 10;
@@ -227,7 +226,7 @@ LEFT JOIN periodoDate pd ON
 
   public function getAlumnosInscritos($id)
   {
-    $view = "SELECT e.cedula, CONCAT(e.nombre, ' ', e.apellido) AS estudiante_completo,e.nombre,e.apellido , e.email, e.telefono,e.nacionalidad, DATE(ep.fecha_inscripcion) AS fecha_inscripcion FROM estudiantes e INNER JOIN estudiante_periodo ep ON e.cedula = ep.estudiante_id WHERE ep.periodo_id = ?  ORDER BY e.cedula;";
+    $view = "SELECT e.cedula, CONCAT(e.nombre, ' ', e.apellido) AS estudiante_completo,e.nombre,e.apellido , e.email, e.telefono,e.nacionalidad, DATE(ep.fecha_inscripcion) AS fecha_inscripcion,pe.estado_pago FROM estudiantes e left JOIN estudiante_periodo ep ON e.cedula = ep.estudiante_id left JOIN pagos_estudiante pe ON pe.estudiante_periodo_id = ep.id WHERE ep.periodo_id = ?  ORDER BY e.cedula;";
     try {
       $res = $this->conexion->query($view, [$id]);
       return $res;
@@ -357,7 +356,7 @@ LEFT JOIN periodoDate pd ON
         return $periodo;
       } else {
         $insert = "INSERT INTO Periodo (idClase, idDate) VALUES ( ?, ?)";
-        $this->conexion->query($insert, [$idClass, $idDate]);
+        $this->conexion->modify($insert, [$idClass, $idDate]);
         $periodo = $this->conexion->query($view, [$idClass, $idDate]);
         return $periodo;
       }
@@ -372,6 +371,16 @@ LEFT JOIN periodoDate pd ON
     $view = "UPDATE Periodo SET idProfesor = ? WHERE id = ?";
     try {
       $this->conexion->query($view, [$profesorCedula, $periodoId]);
+      return true;
+    } catch (\Exception $err) {
+      throw $err;
+    }
+  }
+
+  public function setEndPeriodo($periodoId, $fechaFin){
+    $view = "UPDATE Periodo SET finalizacion = ? WHERE id = ?";
+    try {
+      $this->conexion->query($view, [$fechaFin, $periodoId]);
       return true;
     } catch (\Exception $err) {
       throw $err;
