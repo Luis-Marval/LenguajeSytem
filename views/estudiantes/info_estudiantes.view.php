@@ -5,67 +5,61 @@ echo $parte1; ?>
 <main class="flex-grow p-6 main-scroll">
 
   <div class="w-full flex justify-between mb-2">
-    <h1 class="text-4xl mb-2 text-primary w-50 i"> Datos del estudainte</h1>
+    <h1 class="text-4xl mb-2 text-primary w-50 i"> Datos del estudiante</h1>
     <a href="<?php echo PATH . 'estudiantes/actualizar?cedula=' . $estudiante['cedula']; ?>" class="btn bg-primary text-white">Actualizar Datos</a>
   </div>
   <?php require_once "./views/templates/message/success.php" ?>
   <?php require_once "./views/templates/message/error.php" ?>
-  <div class="card">
+  <div class="card bg-white shadow-md rounded-lg ">
     <div class="p-6">
       <div class="overflow-x-auto">
         <section class="mb-4">
           <div class="grid grid-cols-1 md:grid-cols-1">
-            <div class="text-xl font-semibold titulo-datos">
-              <h2 class="select">Datos del Estudiante</h2>
-            </div>
-
-            <div class="card bg-white shadow-md rounded-lg p-4 data round">
-              <div class="grid grid-cols-3 gap-4 mb-4">
-                <div>
-                  <p><strong>Cedula:</strong>
-                  </p>
-                  <div class="border-solid border-2 p-2 bd-secondary flex justify-between">
-                    <span id="cedula"><?php echo $estudiante["nacionalidad"] . $estudiante["cedula"] ?></span>
-                  </div>
-                </div>
-                <div>
-                  <p><strong>Nombre:</strong>
-                  <div class="border-solid border-2 p-2 bd-secondary"><?php echo $estudiante["nombre"] ?></div>
-                  </p>
-                </div>
-                <div>
-                  <p><strong>Apellido:</strong>
-                  <div class="border-solid border-2 p-2 bd-secondary"><?php echo $estudiante["apellido"] ?></div>
-                  </p>
+            <div class="grid grid-cols-3 gap-4 mb-4">
+              <div>
+                <p><strong>Cedula:</strong>
+                </p>
+                <div class="border-solid border-2 p-2 bd-secondary flex justify-between">
+                  <span id="cedula"><?php echo $estudiante["nacionalidad"] . $estudiante["cedula"] ?></span>
                 </div>
               </div>
-              <div class="grid grid-cols-3 gap-4 mb-4">
-                <div>
-                  <p>
-                    <strong>Fecha de Nacimiento:</strong>
-                  <div class="border-solid border-2 p-2  bd-secondary"><?php echo date("d/m/Y", strtotime($estudiante["fecha_nacimiento"])) ?></div>
-                  </p>
-                </div>
+              <div>
+                <p><strong>Nombre:</strong>
+                <div class="border-solid border-2 p-2 bd-secondary"><?php echo $estudiante["nombre"] ?></div>
+                </p>
+              </div>
+              <div>
+                <p><strong>Apellido:</strong>
+                <div class="border-solid border-2 p-2 bd-secondary"><?php echo $estudiante["apellido"] ?></div>
+                </p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mb-4">
+              <div>
+                <p>
+                  <strong>Fecha de Nacimiento:</strong>
+                <div class="border-solid border-2 p-2  bd-secondary"><?php echo date("d/m/Y", strtotime($estudiante["fecha_nacimiento"])) ?></div>
+                </p>
+              </div>
 
-                <div>
-                  <p><strong>correo:</strong>
-                  <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["email"] ?></div>
-                  </p>
-                </div>
-                <div>
-                  <p><strong>Telefono:</strong>
-                  <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["telefono"] ?></div>
-                  </p>
-                </div>
-                <div class="full-width-item ">
-                  <p><strong>Direccion:</strong></p>
-                  <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["residencia"] ?></div>
+              <div>
+                <p><strong>correo:</strong>
+                <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["email"] ?></div>
+                </p>
+              </div>
+              <div>
+                <p><strong>Telefono:</strong>
+                <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["telefono"] ?></div>
+                </p>
+              </div>
+              <div class="full-width-item ">
+                <p><strong>Direccion:</strong></p>
+                <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["residencia"] ?></div>
 
-                </div>
-                <div class="full-width-item ">
-                  <p><strong>Docmuento:</strong></p>
-                  <img style="height: 300px;object-fit:contain" src=<?php echo PATH . $estudiante["imgadress"] ?> alt="imagen de documento">
-                </div>
+              </div>
+              <div class="full-width-item ">
+                <p><strong>Docmuento:</strong></p>
+                <img style="height: 300px;object-fit:contain" src=<?php echo PATH . $estudiante["imgadress"] ?> alt="imagen de documento">
               </div>
             </div>
           </div>

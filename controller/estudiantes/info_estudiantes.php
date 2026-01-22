@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
     if ($cedula === null || $cedula === "") {
       throw new Exception("Cedula no valida");
     }
-    $estudiante = (new Estudiante)->getEstudiante(['Cedula' => $cedula]);
+    $estudiante = (new Estudiante)->getEstudiante(['dato' => $cedula]);
     
     if ($estudiante === false || empty($estudiante)) {
       throw new Exception("Estudiante no registrado en el sistema");

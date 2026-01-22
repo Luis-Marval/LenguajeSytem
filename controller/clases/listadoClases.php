@@ -1,15 +1,17 @@
 <?php
+
 use model\Clases;
 
+if (empty($_GET['idClase'])) {
   $PorPagina = $_GET['PorPagina'] ?? 10;
   $page = (int)($_GET['pagina'] ?? 1);
   $offset = ($page - 1) * $PorPagina;
   $search = $_GET['search'] ?? null;
   $total = ((new Clases())->countClases())[0][0];
-  if($search == null){
+  if ($search == null) {
     $lista = (new Clases)->getListadoClases(['min' => $offset, 'max' => $PorPagina]);
-  }else{
-    $lista = (new Clases)->getListadoClases(['min' => $offset, 'max' => $PorPagina],['dato' => $search]);
+  } else {
+    $lista = (new Clases)->getListadoClases(['min' => $offset, 'max' => $PorPagina], $search);
   }
   $cantidad = (sizeof($lista));
   // Número inicial mostrado en la página (si no hay elementos será 0)
@@ -31,6 +33,17 @@ use model\Clases;
   }
   $clases = new Clases;
   $estudiate = new model\Estudiante;
-
-
-require_once ("./views/clases/listadoClases.view.php");
+  require_once("./views/clases/listadoClases.view.php");
+} else {
+  try {
+    $datos = (new Clases)->getClase($_GET['idClase']);
+    if (empty($datos)) {
+      throw new Exception('Clase no existente');
+    }
+    $datos = $datos[0];
+    require_once("./views/clases/infoClases.view.php");
+  } catch (\Exception $e) {
+    $_SESSION['error'] = $e->getMessage();
+    header('location:' . PATH . 'clases/listado');
+  }
+}
