@@ -9,7 +9,11 @@ $page = (int)($_GET['pagina'] ?? 1);
 $offset = ($page - 1) * $PorPagina;
 $search = $_GET['search'] ?? null;
 $total = ((new Clases())->countClasesPeriodos())[0][0];
-$lista = (new Clases)->getClasesPeriodos(0, ['min' => $offset, 'max' => $PorPagina]);
+if ($search == null) {
+  $lista = (new Clases)->getClasesPeriodos(0, ['min' => $offset, 'max' => $PorPagina]);
+} else {
+  $lista = (new Clases)->getClasesPeriodos(0, ['min' => $offset, 'max' => $PorPagina], $search);
+}
 $cantidad = (sizeof($lista));
 // Número inicial mostrado en la página (si no hay elementos será 0)
 $cantidadActual = $cantidad > 0 ? ($offset + 1) : 0;
