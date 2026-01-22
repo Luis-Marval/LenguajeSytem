@@ -10,7 +10,7 @@ echo $parte1; ?>
     <div class="card">
       <div class="p-6">
         <form method="POST" action="<?php echo CompleteURL ?>" class="" id="form-medicamento">
-          <div class="w-full grid grid-cols-2 gap-4">
+          <div class="w-full grid grid-cols-3 gap-4">
             <div class="">
               <label for="idioma" class="text-gray-800 text-sm font-medium inline-block mb-2">Idioma:</label>
               <select type="text" id="horario" class="form-select" title="Seleccione el idioma" name="idioma" d="idioma" autocomplete="off" required>
@@ -19,14 +19,9 @@ echo $parte1; ?>
                 <?php endforeach; ?>
               </select>
             </div>
-            <div>
-              <label for="nivel" class="text-gray-800 text-sm font-medium inline-block mb-2">Nivel</label>
-              <input type="number" step="1" class="form-input" name="nivel" id="nivel" pattern="[a-zA-Z0-9._%+-]" title="Ingresa la cantidad que posee la presentacion" required>
-            </div>
-
             <div class="mb-2">
-              <label for="horario" class="text-gray-800 text-sm font-medium inline-block mb-2">tipo:</label>
-              <select type="text" id="horario" class="form-input" name="horario" title="Seleccione el Tipo de la clase" required>
+              <label for="horario" class="text-gray-800 text-sm font-medium inline-block mb-2">Tipo:</label>
+              <select type="text" id="horario" class="form-select" name="horario" title="Seleccione el Tipo de la clase" required>
                 <option value="1">Intensivo</option>
                 <option value="2">Semi-Intensivo</option>
                 <option value="5">Sabatino</option>
@@ -34,33 +29,43 @@ echo $parte1; ?>
                 <option value="4">Semi-Regular</option>
               </select>
             </div>
-
             <div class="">
-              <label for="tipo" class="text-gray-800 text-sm font-medium inline-block mb-2">horario:</label>
-              <select type="text" id="tipo" class="form-input" name="tipo" title="Seleccione el Tipo de la clase" required>
+              <label for="tipo" class="text-gray-800 text-sm font-medium inline-block mb-2">Horario:</label>
+              <select type="text" id="tipo" class="form-select" name="tipo" title="Seleccione el Tipo de la clase" required>
                 <option value="matutino">Matutino</option>
                 <option value="vespertino">Vespertino</option>
                 <option value="nocturno">Nocturno</option>
               </select>
             </div>
+          </div>
+          <div class="w-full grid grid-cols-2 gap-4">
+            <div>
+              <label for="nivel" class="text-gray-800 text-sm font-medium inline-block mb-2">Nivel:</label>
+              <input type="number" step="1" class="form-input" name="nivel" id="nivel" pattern="[a-zA-Z0-9._%+-]" title="Ingresa la cantidad que posee la presentacion" required>
+            </div>
+            <div>
+              <label for="costo" class="text-gray-800 text-sm font-medium inline-block mb-2">Costo:</label>
+              <input type="number" step="1" class="form-input" name="costo" id="costo" pattern="[a-zA-Z0-9._%+-]" title="Ingresa la cantidad que posee la presentacion" required>
+            </div>
+          </div>
+          <div class="w-full grid grid-cols-2 gap-4">
             <div>
               <label for="horaInicio" class="text-gray-800 text-sm font-medium inline-block mb-2">Hora de Inicio:</label>
               <input type="time" step="1" class="form-input" name="horaInicio" id="horaInicio" pattern="[a-zA-Z0-9._%+-]" title="Ingresa la cantidad que posee la presentacion" required>
             </div>
             <div>
-              <label for="horaFin" class="text-gray-800 text-sm font-medium inline-block mb-2">Hora de Finalizacion</label>
+              <label for="horaFin" class="text-gray-800 text-sm font-medium inline-block mb-2">Hora de Finalizacion:</label>
               <input type="time" step="1" class="form-input" name="horaFin" id="horaFin" pattern="[a-zA-Z0-9._%+-]" title="Ingresa la cantidad que posee la presentacion" required>
             </div>
           </div>
       </div>
-
-
-      <div class="my-2 text-center">
-        <button type="submit" class="btn bg-primary text-white hover:bg-blue-700" id="sweetalert-success"> Crear Clase </button>
-      </div>
-
-      </form>
     </div>
+    <div class="my-2 text-center">
+      <button type="submit" class="btn bg-primary text-white hover:bg-blue-700" id="sweetalert-success"> Crear Clase </button>
+    </div>
+
+    </form>
+  </div>
   </div>
   <div class="alertContainer">
     <?php require_once "./views/templates/message/error.php"; ?>
