@@ -8,7 +8,7 @@ try {
     $usuario = new Usuario();
 
     // Obtener datos del usuario
-    $usuarioData = $usuario->getTotal($id)[0]; // Debes tener este método implementado
+    $usuarioData = $usuario->comprobar(['id' => $id]); // Debes tener este método implementado
 
     if (empty($usuarioData)) {
       throw new Exception("El usuario no existe");

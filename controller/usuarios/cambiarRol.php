@@ -29,10 +29,6 @@ try {
     exit;
   }
 
-  if (count($usuario->getTotalAdmins()) <= 1) {
-    echo json_encode(['error' => "El sistema necesita un administrador"]);
-    exit;
-  }
 } catch (Exception $e) {
   echo json_encode(['error' => $e->getMessage()]);
   die();

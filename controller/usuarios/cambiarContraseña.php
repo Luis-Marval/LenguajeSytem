@@ -10,7 +10,7 @@ try{
   if (!$usuario->verifyPassword($datos['actual'],$_SESSION['id'])) {
     throw new Exception("la clave ingresada es incorrecta");
   }
-  $res = $usuario->newPAssword($datos["nueva"],true);
+  $res = $usuario->newPAssword($datos["nueva"],['correo' => $_SESSION['email']]);
   header('Content-Type: application/json');
   echo json_encode(["success" => "Cambio de Contraseña realizado correctamente"]);
   die();
