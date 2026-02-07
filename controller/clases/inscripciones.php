@@ -7,13 +7,10 @@ use model\utils;
 $PorPagina = $_GET['PorPagina'] ?? 10;
 $page = (int)($_GET['pagina'] ?? 1);
 $offset = ($page - 1) * $PorPagina;
-$search = $_GET['search'] ?? null;
-$total = ((new Clases())->countClasesPeriodos())[0][0];
-if ($search == null) {
-  $lista = (new Clases)->getClasesPeriodos(0, ['min' => $offset, 'max' => $PorPagina]);
-} else {
-  $lista = (new Clases)->getClasesPeriodos(0, ['min' => $offset, 'max' => $PorPagina], $search);
-}
+$search = $_GET['search'] ?? '';
+$total = ((new Clases())->countClasesPeriodos());
+$lista = (new Clases)->getClasesPeriodosListado(['min' => $offset, 'max' => $PorPagina], $search);
+
 $cantidad = (sizeof($lista));
 // Número inicial mostrado en la página (si no hay elementos será 0)
 $cantidadActual = $cantidad > 0 ? ($offset + 1) : 0;

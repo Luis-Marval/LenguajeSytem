@@ -54,7 +54,8 @@ class Profesores
   }
   public function countProfesores()
   {
-    $res = $this->conexion->query('SELECT count(*) FROM profesores where status = 1');
+    $res = $this->conexion->query('SELECT count(*) as total FROM profesores where status = 1');
+    $res = $res[0]['total'];
     return $res;
   }
   public function setProfesor($datos): bool|\PDOException
@@ -112,13 +113,6 @@ class Profesores
     } catch (\Exception $err) {
       throw new \Exception($err->getMessage());
     }
-  }
-  public  function mailSend($cedula,$clase,$id){
-    try {
-      $this -> conexion->update('Periodo',['idClase' => $clase, 'periodo_id' => $id,'idProfesor' => $cedula],['sendList' => 0]);
-    } catch (\Exception $err) {
-      throw new \Exception($err->getMessage());
-    }    
   }
 }
 

@@ -11,18 +11,18 @@ class Database
   // * la palabra static se coloca para poder acceder a este atributo sin intancear la clase
   static private $instance;
 
-  // * Se crea la clase __construct() de forma privada para evitar crear mas de una instancia de esta clase
-  private function __construct($dns,$user, $pass)
+  //* Se crea la clase __construct() de forma privada para evitar crear mas de una instancia de esta clase
+  private function __construct($dns, $user, $pass)
   {
-    try{
+    try {
       $this->Dbpdo = new \PDO($dns, $user, $pass);
-    }catch(\PDOException $th){
+    } catch (\PDOException $th) {
       throw new \Exception($th->getMessage());
     }
   }
 
   // * para poder obtener la instacia de esta clase se utiliza el metodo getInstance para retornar la instancia unica o crearla
-  static public function getInstance() : Database
+  static public function getInstance(): Database
   {
     if (!isset(self::$instance)) {
       self::$instance = new static(getenv("DB_NAME"), getenv("DB_USER"), getenv("DB_PASS"));
@@ -44,34 +44,52 @@ class Database
     return $compare;
   }
 
-  public function query(string $text,array $params = [],$type = false)
+  /** 
+   * ejecuta las consultas sql a la base de datos
+   * @param string $text sentencia sql de tipo select para consultar los datos
+   * @param array  $params los parametros a bindear dentro de la sentencia sql
+   * @param bool $notacion establece el tipo de bindo a manejar 
+   * @return array retorna un array con los resultados de la consulta
+   */
+  public function query(string $text, array $params = [], $notacion = false): array
   {
     try {
       $statement = $this->Dbpdo->prepare("$text");
-      if(!empty($params)){    
+      if (!empty($params)) {
         $counter = 1;
         foreach ($params as $key => $value) {
-          if($type == false){
-            $statement->bindvalue($counter, $value);
-            $counter++;
-            continue;
+          $type = \PDO::PARAM_STR;
+          if (is_int($value)) {
+            $type = \PDO::PARAM_INT;
           }
-          $statement->bindvalue($key, $value);
+          if (is_bool($value)) {
+            $type = \PDO::PARAM_BOOL;
+          }
+          $identificador = ($notacion == false) ? $counter : $key;
+          $statement->bindValue($identificador, $value, $type);
+          $counter = $counter + 1;
         }
       }
       $statement->execute();
-      $res = $statement->fetchAll();
+      $res = $statement->fetchAll(\PDO::FETCH_ASSOC);
       return $res;
     } catch (\PDOException $th) {
       throw new \Exception($th->getMessage());
     }
   }
 
-  public function modify(string $text,array $params = [])
+
+  /** 
+   * realiza modificaciones a la base de datos medianten el uso del la funcion query y los transaction
+   * @param string $text sentencia sql de tipo select para consultar los datos
+   * @param array  $params los parametros a bindear dentro de la sentencia sql
+   * @return mixed retorna un mensaje de success
+   */
+  public function modify(string $text, array $params = [], $notacion = false)
   {
     try {
       $this->Dbpdo->beginTransaction();
-      $res = $this->Dbpdo->query($text,$params);
+      $res = $this->query($text, $params, $notacion);
       $this->Dbpdo->commit();
       return $res;
     } catch (\PDOException $th) {
@@ -85,7 +103,7 @@ class Database
     try {
       $statement = $this->Dbpdo->prepare("Select * from $table");
       $statement->execute();
-      $res = $statement->fetchAll();
+      $res = $statement->fetchAll(\PDO::FETCH_ASSOC);
       return $res;
     } catch (\PDOException $th) {
       throw new \Exception($th->getMessage());
@@ -98,7 +116,7 @@ class Database
    * @param array $datos elementos para filtar la consulta, entra como array asociativo ["indice" => valor], el indice tiene que ser el nombre de la columna
    * @param bool $varianze false trae solo el primer resultado, true trae todos los resultados, default = false
    * @return array|false devuelve un array en caso de encontrar algun resultado, en caso de no encontrar nada se devolvera false
-  */
+   */
 
   public function readOnly(string $table, array $datos, $varianze = false): array|false
   {
@@ -112,9 +130,9 @@ class Database
       }
       $statement->execute();
       if ($varianze) {
-        $res = $statement->fetchAll();
+        $res = $statement->fetchAll(\PDO::FETCH_ASSOC);
       } else {
-        $res = $statement->fetch();
+        $res = $statement->fetch(\PDO::FETCH_ASSOC);
       }
       return $res;
     } catch (\PDOException $th) {
@@ -122,37 +140,23 @@ class Database
     }
   }
 
-  public function readLimitOrder(string $table, $datos,$where): array|false
+  public function trasaction(string $option)
   {
     try {
-      $order = isset($datos['element'])? "ORDER BY $datos[element] $datos[order]" : "";
-      $where = array_keys($where)." = ".$where ;
-      $statement = $this->Dbpdo->prepare("Select * from $table $where $order limit 1");
-      $statement->execute();
-      $res = $statement->fetchAll();
-      return $res;
-    } catch (\PDOException $th) {
-      throw new \Exception($th->getMessage());
-    }
-  }
-
-  public function trasaction(string $option){
-    try{
-      switch($option){
+      switch ($option) {
         case "begin":
           $this->Dbpdo->beginTransaction();
-        break;
+          break;
         case "commit":
           $this->Dbpdo->commit();
-        break;
+          break;
         case "back":
           $this->Dbpdo->rollBack();
-        break;
+          break;
         default:
           throw new Exception("Opcion no valida");
       }
-    }catch(Exception){
-
+    } catch (Exception) {
     }
   }
 
@@ -161,6 +165,7 @@ class Database
     $keys = array_keys($datos);
     $values = array_values($datos);
     try {
+      $this->Dbpdo->beginTransaction();
       $statement = $this->Dbpdo->prepare(
         "insert into $table (" . implode(",", $keys) . ") values(:" . implode(",:", $keys) . ")"
       );
@@ -169,19 +174,22 @@ class Database
       }
       $statement->execute();
       $res = $this->Dbpdo->lastInsertId();
+      $this->Dbpdo->commit();
       return $res;
     } catch (\PDOException $th) {
+      $this->Dbpdo->rollBack();
       throw new \Exception($th->getMessage());
     }
   }
 
-  public function update($table, $where,$datos)
+  public function update($table, $where, $datos)
   {
     $whereId =  array_key_first($where);
     $whereValue = array_shift($where);
     $keys = array_keys($datos);
     $value = array_values($datos);
     try {
+      $this->Dbpdo->beginTransaction();
       $parametros = $this->parametros($datos, ',');
       $statement = $this->Dbpdo->prepare(
         "UPDATE $table set $parametros WHERE " . $whereId . "=:" . $whereId
@@ -191,13 +199,16 @@ class Database
       }
       $statement->bindParam($whereId, $whereValue);
       $statement->execute();
-      $res = $statement->fetch(); 
+      $res = $statement->fetch();
+      $this->Dbpdo->commit();
       return $res;
     } catch (\PDOException $th) {
+      $this->Dbpdo->rollBack();
       throw new \Exception($th->getMessage());
     }
   }
-  public function delete($table,$where){
+  public function delete($table, $where)
+  {
     $whereId =  array_key_first($where);
     $whereValue = array_shift($where);
     try {
@@ -206,7 +217,7 @@ class Database
       );
       $statement->bindParam($whereId, $whereValue);
       $statement->execute();
-      $res = $statement->fetch(); 
+      $res = $statement->fetch();
       return $res;
     } catch (\PDOException $th) {
       throw new \Exception($th->getMessage());

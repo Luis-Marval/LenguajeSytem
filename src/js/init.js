@@ -11,74 +11,74 @@ document.addEventListener("DOMContentLoaded", function () {
   if (userChangeBtn) {
     userChangeBtn.addEventListener("click", function () {
       // Crear modal básico
-      const modalBg = document.createElement("div");
-      modalBg.style.position = "fixed";
-      modalBg.style.top = 0;
-      modalBg.style.left = 0;
-      modalBg.style.width = "100vw";
-      modalBg.style.height = "100vh";
-      modalBg.style.background = "rgba(0,0,0,0.5)";
-      modalBg.style.display = "flex";
-      modalBg.style.alignItems = "center";
-      modalBg.style.justifyContent = "center";
-      modalBg.style.zIndex = 9999;
 
-      const modal = document.createElement("div");
-      modal.style.background = "#fff";
-      modal.style.padding = "2em";
-      modal.style.borderRadius = "8px";
-      modal.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
-      modal.innerHTML = `
-          <h1>Cambiar contraseña</h1>
-          <form id="changePassForm" class="flex flex-column aling-end">
-            <div>
-              <label>Clave actual</label>
-              <input type="password" name="actual" required class="form-control" autofocus/>
-            </div>
-            <div>
-              <label>Nueva clave</label>
-              <input type="password" name="nueva" required class="form-control"/>
-            </div>
-            <div>
-              <label>Repetir nueva clave</label>
-              <input type="password" name="nueva2" required class="form-control"/>
-            </div>
+      const modal = `<div id="formModal" class="flex fixed h-screen w-screen bg-awd justify-center items-center z-999  l0 t0">
+    <div class="modal-container dark:bg-slate-900">
+          <h1 class="text-xl font-display font-bold text-slate-900 dark:text-white">Cambiar contraseña</h1>
+          <form id="changePassForm" class="flex flex-column">
+          <div class="mb-2">
+<label class="block text-sm font-display font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-tight"  for="actual">Clave actual</label>
+<input class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-blue-500 transition-all outline-none mono-text text-sm" placeholder="••••••••" type="password"  name="actual" id="actual"/>
+</div>
+<div class="mb-2">
+<label class="block text-sm font-display font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-tight" for="nueva">Nueva clave</label>
+<input class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-blue-500 transition-all outline-none mono-text text-sm" placeholder="••••••••" type="password" name="nueva" id="nieva"/>
+</div>
+<div class="mb-2">
+<label class="block text-sm font-display font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-tight">Repetir nueva clave</label>
+<div class="relative group" for="nueva2">
+<input class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-blue-500 transition-all outline-none mono-text text-sm" placeholder="••••••••" type="password" name="nueva2" id="nueva2"/>
+</div>
+</div>
             <div style="margin-top:1em; text-align:right;">
-              <button type="button" id="cancelChangePass" class="btn btn-secondary">Cancelar</button>
-              <button type="submit" class="btn btn-primary">Guardar</button>
+              <button type="button" id="cancelChangePass" class="px-6 py-2.5 text-sm font-display font-semibold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-blue-300 transition-colors">Cancelar</button>
+              <button type="submit" class="px-8 py-2.5 bg-primary hover:bg-accent text-white rounded-xl shadow-lg shadow-primary/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] text-sm font-display font-bold tracking-wider" >Guardar</button>
             </div>
           </form>
+                      </div>
+          </div>
         `;
-      modalBg.appendChild(modal);
+
+      // Insertar modal en el body
+      const modalBg = document.createElement('div');
+      modalBg.innerHTML = modal;
       document.body.appendChild(modalBg);
 
-      // Cerrar modal
-      document.getElementById("cancelChangePass").onclick = () => {
-        document.body.removeChild(modalBg);
-      };
-      document.getElementById("changePassForm").onsubmit = async function (e) {
-        e.preventDefault();
-        const actual = this.actual.value;
-        const nueva = this.nueva.value;
-        const nueva2 = this.nueva2.value;
-        if (nueva !== nueva2) {
-          alert("Las nuevas contraseñas no coinciden.");
-          return;
-        }
-        const post = JSON.stringify({ actual, nueva });
-        const json = await fetch("/IPSFANB/cambiarContrasena", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: post,
+      // Cerrar modal con el botón Cancelar
+      const cancelBtn = modalBg.querySelector('#cancelChangePass');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', function () {
+          if (document.body.contains(modalBg)) document.body.removeChild(modalBg);
         });
-        const datos = await json.json();
-        if (datos.hasOwnProperty("success")) {
-          alert(datos.success);
-          document.body.removeChild(modalBg);
-        }else if(datos.hasOwnProperty("error")){
-          alert(datos.error);
-        }
-      };
+      }
+
+      // Manejar envío del formulario dentro del modal
+      const changePassForm = modalBg.querySelector('#changePassForm');
+      if (changePassForm) {
+        changePassForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          const actual = this.actual.value;
+          const nueva = this.nueva.value;
+          const nueva2 = this.nueva2.value;
+          if (nueva !== nueva2) {
+            alert("Las nuevas contraseñas no coinciden.");
+            return;
+          }
+          const post = JSON.stringify({ actual, nueva });
+          const json = await fetch("/cambiarContrasena", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: post,
+          });
+          const datos = await json.json();
+          if (datos.hasOwnProperty("success")) {
+            alert(datos.success);
+            if (document.body.contains(modalBg)) document.body.removeChild(modalBg);
+          } else if (datos.hasOwnProperty("error")) {
+            alert(datos.error);
+          }
+        });
+      }
     });
   }
 });

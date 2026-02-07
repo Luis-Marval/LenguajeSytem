@@ -2,6 +2,7 @@
 
 namespace model;
 
+use DateTime;
 use Exception;
 use model\Database;
 use model\Estudiante;
@@ -14,7 +15,11 @@ class Clases
   {
     $this->conexion = Database::getInstance();
   }
-  public function getIdiomas()
+  /**
+   * busca el lisado de idiomas 
+   * @return array listado de idiomas
+   */
+  public function getIdiomas(): array
   {
     $view = 'select * from idiomas';
     try {
@@ -24,14 +29,17 @@ class Clases
       throw new \Exception($th->getMessage());
     }
   }
-  public function createClase($datos)
+  /**
+   * Crea una nueva fila de la tabla clase
+   * @param array $datos la informacion de la clase a crear
+   */
+  public function createClase(array $datos)
   {
     try {
       $res = $this->conexion->insert('clases', $datos);
-      return $res;
+      return true;
     } catch (\Exception $err) {
       $errorMessage = $err->getMessage();
-      var_dump($errorMessage);
       if (
         strpos($errorMessage, 'ya existe una clase') !== false ||
         strpos($errorMessage, 'Duplicate entry') !== false ||
@@ -43,6 +51,12 @@ class Clases
       throw $err;
     };
   }
+
+  /**
+   * Buscar la inforamcion de una clase 
+   * @param int $id identificador de la clase a buscar
+   * @return array retorna la informacion de la clase
+   */
   public function getClase($id)
   {
     $view = "select c.*,i.name from clases c left join idiomas i on c.idioma = i.id where c.id = ? limit 1";
@@ -55,57 +69,62 @@ class Clases
     };
   }
 
-  public function countClasesPeriodos()
+  /**
+   * Trae la cantidad total de clases activas actualmente
+   * @return int el total de clases activas
+   */
+  public function countClasesPeriodos(): int
   {
     try {
-      $view = 'select count(*) from clasesActivas';
+      $view = 'select count(*) as total from clasesActivas';
       $res = $this->conexion->query($view);
-      return $res;
+      $total = is_int($res[0]['total']) ? $res[0]['total'] : throw new Exception("Fallo al cargar los datos");
+      return $total;
+    } catch (\Exception $err) {
+      throw $err;
+    };
+  }
 
+  /**
+   * Busca el listado de la vista clasesActivas 
+   * @param array $limit cantidad de filas a traer [max:int= cantidad a buscar][min:int = numero de donde inicia a buscar]
+   * @param array $dato filtra los resultado en base a parecidos
+   * @return array listado de las clasesActivas
+   */
+  public function getClasesPeriodosListado($limit = [], $dato = '')
+  {
+    $view = "select * from clasesActivas";
+    try {
+      if (!empty($dato)) {
+        $view .= ' WHERE (horario LIKE :dato OR tipo LIKE :dato OR nivel LIKE :dato OR name LIKE :dato)';
+      }
+      if (!empty($limit)) {
+        $min = $limit["min"] ?? 0;
+        $max = $limit["max"] ?? 10;
+        $view .= " limit $max offset $min";
+      }
+      if (!empty($dato)) {
+        $dato = "%$dato%";
+        return $this->conexion->query($view, ['dato' => $dato], true);
+      }
+      $res = $this->conexion->query($view);
       return $res;
     } catch (\Exception $err) {
       throw $err;
     };
   }
 
-  public function getClasesPeriodos($id = 0, $limit = [], $dato = '')
+  /**
+   * Busca la informacion de un periodo especifico
+   * @param int $id identificador del periodo 
+   * @return array informacion del periodo
+   */
+  public function getClasePeriodo($id)
   {
-    $view = "select * from clasesActivas";
     try {
-      if ($id == 0) {
-        if (!empty($dato)) {
-          $view .= ' WHERE (horario LIKE :dato OR tipo LIKE :dato OR nivel LIKE :dato OR name LIKE :dato)';
-        }
-        if (!empty($limit)) {
-          $min = $limit["min"] ?? 0;
-          $max = $limit["max"] ?? 10;
-          $view .= " limit $max offset $min";
-        }
-        if (!empty($dato)) {
-          $dato = "%$dato%";
-          return $this->conexion->query($view, ['dato' => $dato], true);
-        }
-        $res = $this->conexion->query($view);
-        return $res;
-      }
-      $view = 'SELECT
-    c.id,
-    i.name,
-    c.tipo,
-    c.horario,
-    c.nivel,
-    c.horaInicio,
-    c.horaFin,
-    p.id as idPeriodo,
-    pd.status AS statusPeriodo
-FROM
-    clases c
-LEFT JOIN Periodo p ON
-    c.id = p.idClase
-LEFT JOIN idiomas i ON
-    i.id = c.idioma
-LEFT JOIN periodoDate pd ON
-    pd.id = p.idDate where c.id = ?';
+      // #region Query de Clases
+      $view = 'SELECT c.id,i.name,c.tipo,c.horario,c.nivel,c.horaInicio, c.horaFin,p.id as idPeriodo,p.idDate AS statusPeriodo FROM clases c LEFT JOIN Periodo p ON c.id = p.idClase LEFT JOIN idiomas i ON i.id = c.idioma where c.id = ?';
+      // #endregion Query de Clases
       $res = $this->conexion->query($view, ['id' => $id]);
       return $res;
     } catch (\Exception $err) {
@@ -113,9 +132,14 @@ LEFT JOIN periodoDate pd ON
     };
   }
 
+  /**
+   * Trae el historial de  las clases
+   * @param array $limit cantidad de filas a traer [max:int= cantidad a buscar][min:int = numero de donde inicia a buscar]
+   * @return array listadod e clases finalizadas
+   */
   public function getHistorialClases($limit)
   {
-    $view = "SELECT p.*,p.id as idPeriodo,c.*,i.name AS name,pd.* FROM Periodo p INNER JOIN profesores prof ON p.idProfesor = prof.cedula INNER JOIN clases c ON p.idClase = c.id INNER JOIN idiomas i ON c.idioma = i.id INNER JOIN periodoDate pd ON p.idDate = pd.id where pd.status = 0 and p.statusPeriodo = 1 order by p.id DESC;";
+    $view = "SELECT p.*,p.id as idPeriodo,c.*,i.name AS name FROM Periodo p INNER JOIN profesores prof ON p.idProfesor = prof.cedula INNER JOIN clases c ON p.idClase = c.id INNER JOIN idiomas i ON c.idioma = i.id where p.idDate = 0 and p.statusPeriodo = 1 order by p.id DESC;";
     try {
       $min = $limit["min"] ?? 0;
       $max = $limit["max"] ?? 10;
@@ -128,6 +152,12 @@ LEFT JOIN periodoDate pd ON
     };
   }
 
+  /**
+   * Trae el listado de las clases creadas
+   * @param array $limit cantidad de filas a traer [max:int= cantidad a buscar][min:int = numero de donde inicia a buscar]
+   * @param array $dato filtra los resultado en base a parecidos
+   * @return array listado de las clases
+   */
   public function getListadoClases($limit = [], $dato = '')
   {
     $view = "SELECT c.*, i.name FROM lenguajeSystem.clases c left JOIN lenguajeSystem.idiomas i ON c.idioma = i.id";
@@ -152,33 +182,44 @@ LEFT JOIN periodoDate pd ON
     };
   }
 
+  /**
+   * @return int retorna la cantidad de entradas de la tabla clases
+   */
   public function countClases()
   {
-    $view = "SELECT count(*) from lenguajeSystem.clases c";
+    $view = "SELECT count(*) as total from lenguajeSystem.clases c";
     try {
       $res = $this->conexion->query($view);
-      return $res;
-    } catch (\Exception $err) {
-      $errorMessage = $err->getMessage();
-      throw $err;
-    };
-  }
-  public function countHistorial()
-  {
-    $view = "SELECT count(*) FROM Periodo p INNER JOIN profesores prof ON p.idProfesor = prof.cedula INNER JOIN clases c ON p.idClase = c.id INNER JOIN idiomas i ON c.idioma = i.id INNER JOIN periodoDate pd ON p.idDate = pd.id where pd.status = 0 and p.statusPeriodo = 1;";
-    try {
-      $res = $this->conexion->query($view);
-      return $res;
+      $total = $res[0]['total'];
+      return $total;
     } catch (\Exception $err) {
       $errorMessage = $err->getMessage();
       throw $err;
     };
   }
 
+  /**
+   * @return int retorna el total de clases historial
+   */
+  public function countHistorial()
+  {
+    $view = "SELECT count(*) as total FROM Periodo p INNER JOIN profesores prof ON p.idProfesor = prof.cedula INNER JOIN clases c ON p.idClase = c.id INNER JOIN idiomas i ON c.idioma = i.id where p.idDate = 0 and p.statusPeriodo = 1;";
+    try {
+      $res = $this->conexion->query($view);
+      $total = $res[0]['total'];
+      return $total;
+    } catch (\Exception $err) {
+      $errorMessage = $err->getMessage();
+      throw $err;
+    };
+  }
+  /**
+   * analiza si el alumno es apto para cambiar de clase
+   */
   public function verificarAlumno($datos)
   {
     try {
-      $query =  $this->conexion->query('select p.idClase,p.id,ep.fecha_inscripcion from estudiantes e left join estudiante_periodo ep on ep.estudiante_id = e.cedula left join Periodo p on ep.periodo_id = p.id left join periodoDate pd  on p.idDate = pd.id where e.cedula = :estudiante_id and pd.status = 1 and p.id != :periodo_id order by ep.periodo_id DESC limit 1', ['estudiante_id' => $datos['estudiante_id'], 'periodo_id' => $datos['periodo_id']], true);
+      $query =  $this->conexion->query('select p.idClase,p.id,ep.fecha_inscripcion from estudiantes e left join estudiante_periodo ep on ep.estudiante_id = e.cedula left join Periodo p on ep.periodo_id = p.id where e.cedula = :estudiante_id and p.idDate = 1 and p.id != :periodo_id order by ep.periodo_id DESC limit 1', ['estudiante_id' => $datos['estudiante_id'], 'periodo_id' => $datos['periodo_id']], true);
       if (!empty($query[0]['idClase'])) {
         $fecha = new \DateTime($query[0]['fecha_inscripcion']);
         $fechaActual = new \DateTime(); // Fecha y hora actual
@@ -253,7 +294,9 @@ LEFT JOIN periodoDate pd ON
         $res = $this->conexion->query($view);
       } else {
         $datos['nivel'] = $datos['nivel'] - 1;
-        $view = "SELECT DISTINCT e.*, c_anterior.Nivel AS nivel_anterior_cursado,ep_anterior.periodo_id  FROM estudiantes e INNER JOIN estudiante_periodo ep_anterior ON e.cedula = ep_anterior.estudiante_id INNER JOIN Periodo p_anterior ON ep_anterior.periodo_id = p_anterior.id INNER JOIN clases c_anterior ON p_anterior.idClase = c_anterior.id WHERE  ep_anterior.id = (SELECT MAX(id) FROM estudiante_periodo WHERE estudiante_id = e.cedula) and c_anterior.Nivel = :nivel AND c_anterior.tipo = :tipo AND c_anterior.idioma = :idioma AND c_anterior.horario = :horario";
+        // #region 
+        $view = "SELECT DISTINCT e.*,c_anterior.Nivel AS nivel_anterior_cursado, ep_anterior.periodo_id FROM estudiantes e INNER JOIN estudiante_periodo ep_anterior ON e.cedula = ep_anterior.estudiante_id INNER JOIN Periodo p_anterior ON ep_anterior.periodo_id = p_anterior.id INNER JOIN clases c_anterior ON p_anterior.idClase = c_anterior.id WHERE ep_anterior.id = (SELECT MAX(id) FROM estudiante_periodo WHERE estudiante_id = e.cedula) and p_anterior.idDate != 1 and c_anterior.Nivel = :nivel AND c_anterior.tipo = :tipo AND c_anterior.idioma = :idioma AND c_anterior.horario = :horario";
+        // #endregion 
         $res = $this->conexion->query($view, $datos, true);
       }
       return $res;
@@ -265,16 +308,7 @@ LEFT JOIN periodoDate pd ON
   public function getAlumnosPorInscribir()
   {
     try {
-      $valid = $this->getPeriodoDate();
-      if (empty($valid)) return false;
-      $view = "SELECT DISTINCT e.cedula,e.nombre, e.apellido, e.telefono, e.email, c_anterior.Nivel AS nivel,c_anterior.idioma,c_anterior.tipo ,c_anterior.horario 
-            FROM
-            estudiantes e
-            LEFT JOIN estudiante_periodo ep_anterior ON e.cedula = ep_anterior.estudiante_id
-            LEFT JOIN Periodo p_anterior ON ep_anterior.periodo_id = p_anterior.id 
-            LEFT JOIN periodoDate pd_anterior ON p_anterior.idDate  = pd_anterior.id
-            LEFT JOIN clases c_anterior ON p_anterior.idClase = c_anterior.id 
-            wHERE c_anterior.id IS NOT NULL and p_anterior.statusPeriodo != 0 and pd_anterior.status !=1";
+      $view = "SELECT e.cedula, e.nombre,e.apellido, e.telefono, e.email, c_anterior.Nivel AS nivel, c_anterior.idioma, c_anterior.tipo,c_anterior.horario,p_anterior.idDate FROM estudiantes e INNER JOIN estudiante_periodo ep_anterior ON e.cedula = ep_anterior.estudiante_id INNER JOIN Periodo p_anterior ON ep_anterior.periodo_id = p_anterior.id INNER JOIN clases c_anterior ON p_anterior.idClase = c_anterior.id WHERE p_anterior.id = (SELECT MAX(p2.id) FROM Periodo p2 JOIN estudiante_periodo ep2 ON p2.id = ep2.periodo_id WHERE ep2.estudiante_id = e.cedula AND p2.statusPeriodo != 0) and p_anterior.idDate != 1 AND EXISTS ( SELECT 1 FROM clases c_futura INNER JOIN Periodo p_futura ON c_futura.id = p_futura.idClase WHERE p_futura.idDate = 1 and p_futura.idProfesor is NOT NULL and p_futura.finalizacion is NOT NULL AND c_futura.Nivel > c_anterior.Nivel AND c_futura.idioma = c_anterior.idioma and c_futura.tipo = c_anterior.tipo and c_futura.horario = c_anterior.horario)";
       $res = $this->conexion->query($view);
       if (empty($res)) return false;
       $clases = $this->getListadoClases();
@@ -332,41 +366,17 @@ LEFT JOIN periodoDate pd ON
     );
   }
 
-  public function getPeriodoDate()
+  public function Periodo($idClass)
   {
-    $view = "select * from periodoDate pd order by id desc limit 1";
+    $view = "SELECT * FROM Periodo WHERE idClase = ? AND idDate = 1";
     try {
-      $res = $this->conexion->query($view);
-      return $res;
-    } catch (\Exception $err) {
-      $errorMessage = $err->getMessage();
-      throw $err;
-    };
-  }
-
-  public function setPeriodoDate($datos)
-  {
-    $view = "select pd.status from periodoDate pd order by id desc limit 1";
-    try {
-      $res = $this->conexion->insert('periodoDate', $datos);
-      return $res;
-    } catch (\Exception $err) {
-      $errorMessage = $err->getMessage();
-      throw $err;
-    };
-  }
-
-  public function Periodo($idClass, $idDate)
-  {
-    $view = "SELECT * FROM Periodo WHERE idClase = ? AND idDate = ?";
-    try {
-      $periodo = $this->conexion->query($view, [$idClass, $idDate]);
+      $periodo = $this->conexion->query($view, [$idClass]);
       if (!empty($periodo)) {
         return $periodo;
       } else {
-        $insert = "INSERT INTO Periodo (idClase, idDate) VALUES ( ?, ?)";
-        $this->conexion->modify($insert, [$idClass, $idDate]);
-        $periodo = $this->conexion->query($view, [$idClass, $idDate]);
+        $insert = "INSERT INTO Periodo (idClase) VALUES (?)";
+        $this->conexion->insert('Periodo', ['idClase' => $idClass]);
+        $periodo = $this->conexion->query($view, [$idClass]);
         return $periodo;
       }
     } catch (\Exception $err) {
@@ -377,9 +387,9 @@ LEFT JOIN periodoDate pd ON
 
   public function setProfesorPeriodo($periodoId, $profesorCedula)
   {
-    $view = "UPDATE Periodo SET idProfesor = ? WHERE id = ?";
+    $view = "UPDATE Periodo SET idProfesor = :idProfesor WHERE id = :id";
     try {
-      $this->conexion->query($view, [$profesorCedula, $periodoId]);
+      $this->conexion->modify($view, ['idProfesor'=>$profesorCedula, 'id'=>$periodoId],true);
       return true;
     } catch (\Exception $err) {
       throw $err;
@@ -406,14 +416,32 @@ LEFT JOIN periodoDate pd ON
       throw $err;
     }
   }
-  public function sendFileList()
+
+  public function updateClase($id, $datos)
   {
-    $view = "SELECT p.*,pd.id as periodoDate from Periodo p left join periodoDate pd on p.idDate = pd.id where p.statusPeriodo = 1 and p.sendList = 1 and pd.status = 0";
     try {
-      $res = $this->conexion->query($view);
+      $res = $this->conexion->update('clases', ['id' => $id], $datos);
       return $res;
     } catch (\Exception $err) {
-      throw $err;
+      throw new \Exception($err->getMessage());
     }
+  }
+
+  public function finalizarPeriodo($periodoId)
+  {
+    $periodoData = $this->getPeriodo($periodoId);
+    if (($periodoData[0]['idDate']) == 0) {
+      return false;
+    }
+    if (empty($periodoData[0]['finalizacion'])) {
+      throw new \Exception('No existe una fecha de finalizacion');
+    }
+    if (empty($periodoData[0]['idProfesor'])) {
+      throw new \Exception('No existe una un profesor establecido');
+    }
+    $inscritos = $this->getAlumnosInscritos($periodoId);
+    $date = new DateTime();
+    $this->conexion->update('Periodo', ['id' => $periodoId], ['idDate' => 0, 'finalInscripcion' => $date->format('Y-m-d')]);
+    return true;
   }
 }

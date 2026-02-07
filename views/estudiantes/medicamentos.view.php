@@ -5,7 +5,7 @@ echo $parte1; ?>
 <main class="flex-grow p-6 main-scroll">
   <div class="min-h-min mb-4">
     <div>
-      <h1 class="text-4xl text-primary w-50 inBlock">Medicamentos</h1>
+      <h1 class="text-2xl text-primary w-50 inBlock">Medicamentos</h1>
     </div>
   </div>
   <?php require_once "./views/templates/message/success.php" ?>

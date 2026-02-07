@@ -15,14 +15,9 @@ try {
       'nacionalidad' => utils::sanear($_POST['nacionalidad']),
     ];
     $res = (new Profesores())->getProfesor(['cedula' => $datos["cedula"]]);
-    if (empty($res) && $res['status'] == 1) {
+    if (!empty($res)) {
       throw new Exception("Profesor ya registrado");
     }
-/*     if($res['status'] == 0){
-      $_SESSION["success"] = "Profesor registrado correctamente";
-      header("Location: " . PATH . "profesor/listado");
-      exit();
-    } */
     utils::vacia($datos);
     //registrar Profesor
     $pacientes = (new Profesores())->setProfesor($datos);

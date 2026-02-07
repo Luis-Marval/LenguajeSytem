@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     if ($clave !== $clave2) {
       throw new Exception("Las contraseñas no coinciden. Vuelve a intentarlo.");
     }
-    $usuario->newPAssword($clave, $userToken['correo']);
+    $usuario->newPAssword($clave,['correo' => $userToken['correo']]);
     $_SESSION['success'] = "contraseña cambiada con Exito";
 
     header('location:' . PATH . "login");

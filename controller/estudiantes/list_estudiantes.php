@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
   $page = max(1, (int)($_GET['pagina'] ?? 1));
   $offset = ($page - 1) * $PorPagina;
   $search = $_GET['search'] ?? null;
-  $total = ((new Estudiante())->countEstudiantes())[0][0];
+  $total = ((new Estudiante())->countEstudiantes());
   if($search != null){
     $lista = (new Estudiante)->getEstudiante(['dato' => $search],['min'=>$offset,'max'=>$PorPagina]);
   }else{

@@ -12,20 +12,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
     // Registrar pago inicial
+    if ($data['action'] === 'finalizar_inscripcion') {
+      try {
+        $periodoId = $data['periodo_id'] ?? null;
+        if (empty($periodoId)) {
+          header('Content-Type:application/json', true, 400);
+          echo json_encode(['success' => false, 'error' => 'Falta periodo_id']);
+          die();
+        }
+
+        // Aquí implementas la lógica real de "finalizar"
+        // Ejemplos de lo que podrías hacer:
+
+        // 1. Marcar el periodo como finalizado
+        $clasesModel = new Clases();
+
+        $res = $clasesModel->finalizarPeriodo($periodoId);  
+        if ($res == true) {
+          require_once('./daily_task.php');
+          sendMail($periodoId);
+        }
+
+        header('Content-Type:application/json');
+        echo json_encode(['success' => true, 'message' => 'Periodo finalizado exitosamente']);
+        die();
+      } catch (Exception $e) {
+        header('Content-Type:application/json', true, 500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        die();
+      }
+    }
+    // registar pago incial
     if (($data['action']) === 'registrar_pago_inicial') {
       try {
         $cedula = $data['estudiante_id'] ?? null;
         $periodoId = $data['periodo_id'] ?? null;
         $porcentaje = $data['porcentaje'] ?? null;
-        $comentario = $data['comentario'] ?? null;
-        if ($comentario == null) {
-          if ($porcentaje !== null && $porcentaje == 100) {
-            $comentario = 'Pago del monto Total';
-          }
-          if ($porcentaje !== null && $porcentaje == 60) {
-            $comentario = 'Pago Inicial';
-          }
-        }
 
         if (empty($cedula) || empty($periodoId) || empty($porcentaje)) {
           header('Content-Type:application/json', true, 400);
@@ -48,11 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         $Clase = (new model\Clases)->getClase($idClass[0]['idClase']);
-        $montoClase = $Clase[0]['Monto'];
+        $montoClase = $Clase[0]['monto'];
         $pagosModel = new model\Pagos();
         $pagosModel->registrarPagoInicial($estudiantePeriodoId, $montoClase, [
           'porcentaje' => $porcentaje,
-          'comentario' => $comentario,
         ]);
 
 
@@ -80,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'estudiante_id' =>  $data['estudiante_id'],
         'periodo_id' => $data['periodo_id']
       ];
-      $status = (new Clases)->verificarAlumno($datos);
+      $status = (new Estudiante)->verificarAlumno($datos);
       if ($status == false) {
         header('Content-Type:application/json');
         echo json_encode(['success' => 'block']);
@@ -96,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       echo json_encode(['success' => true]);
       die();
     }
+
     // Cambiar alumno
     if ($data['action'] == 'cambio') {
       $datosQuitar = [
@@ -157,6 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       }
     }
 
+    // buscar alumnos
     if ($data['action'] == 'buscar_alumno') {
       try {
         $buscar = $data['buscar'] ?? null;
@@ -185,6 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       }
     }
 
+    // establecer profesor
     if ($data['action'] == 'set_profesor') {
       try {
         $periodoId = $data['periodo_id'] ?? null;
@@ -200,10 +224,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die();
       } catch (Exception $e) {
         header('Content-Type:application/json', true, 500);
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error' => $e->getTrace()]);
         die();
       }
     }
+
+    // establecer fecha de finalizacion
     if ($data['action'] == 'set_Date') {
       try {
         $periodoId = $data['periodo_id'] ?? null;
@@ -233,15 +259,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 if (!empty($_GET['get'])) {
   try {
     $inscritos = (new Clases)->getAlumnosInscritos($_GET['get']);
-    
+
     header('Content-Type:application/json');
     echo json_encode(['data' => $inscritos]);
     die();
   } catch (Exception $err) {
     http_response_code(404);
-    echo '<pre>';
-    var_dump($err);
-    echo '</pre>';
+    header('Content-Type:application/json', true);
+    echo json_encode(['error' => 'No se encontraron alumnos por inscribir']);
     die();
   }
 }
@@ -252,7 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
       throw new Exception("Seleccione una clase valida");
     };
 
-    $clase = (new Clases)->getClasesPeriodos($_GET['idClass']);
+    $clase = (new Clases)->getClasePeriodo($_GET['idClass']);
     $clase = empty($clase[0]) ? false : $clase[0];
     if ($clase == false) {
       throw new Exception("Fallo del sistema");
@@ -264,11 +289,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         ($profesor['nombre'] ?? '') . ' ' . ($profesor['apellido'] ?? '') . ' ' .
         ($profesor['email'] ?? '');
     }
-
-    // Traera el ID de la fecha de periodo
-    $periodo = (new Clases)->getPeriodoDate();
     // Trae los datos del periodo actual
-    $periodoData = (new Clases)->Periodo($_GET['idClass'], $periodo[0]['id']);
+    $periodoData = (new Clases)->Periodo($_GET['idClass']);
     // toma el id del periodo
     $periodoId = $periodoData[0]['id'];
     //Trae la informacion de la clase

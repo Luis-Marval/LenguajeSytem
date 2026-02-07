@@ -18,7 +18,7 @@ try {
     utils::vacia($datos);
     //registrar Profesor
     $cedula = $_POST['cedula'];
-    if ($_FILES['file']['name'] != '') {
+/*     if ($_FILES['file']['name'] != '') {
       $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
       $imgName = preg_replace('/[^A-Za-z0-9_-]/', '', $_POST['cedula'] . $datos['nombre'] . $datos['apellido']);
       $imgName = $imgName . ($ext ? '.' . $ext : '.jpg');
@@ -29,9 +29,9 @@ try {
       if (!move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
         throw new Exception("No se pudo mover el archivo a: $targetPath");
       }
-    }
+    }*/
 
-    $res = (new Estudiante())->updateEstudante($cedula, $datos);
+    $res = (new Estudiante())->updateEstudante($cedula, $datos); 
     // redirigir al listado de estudiantes con un mensaje de exito
 
     $_SESSION["success"] = "Datos actualizados correctamente";

@@ -15,18 +15,15 @@ try {
       'email' => utils::sanear($_POST['correo']),
       'residencia' => utils::sanear($_POST['Residencia']),
       'nacionalidad' => utils::sanear($_POST['nacionalidad']),
+      'tipoDocumento' => utils::sanear($_POST['tipoDocumento'])
     ];
-    $res = (new Estudiante())->getEstudiante(['cedula' => $datos["cedula"]]);
-    if ($res === true) {
+    $res = (new Estudiante())->getEstudiante(['dato' => $datos["cedula"]]);
+/*     if ($res === true) {
       throw new Exception("Estudiante ya registrado");
     }
     // varificar que es una imagen
     if (stripos($_FILES['file']['type'], 'image/') !== 0) {
       throw new Exception("El archivo debe ser una imagen.");
-    }
-    //verificar que no pase del tamaño
-    if ($_FILES["file"]["size"] > 3000000) {
-      throw new Exception("La imagen no debe superar los 3Mb");
     }
 
     //nombre y extension de la imagen
@@ -35,15 +32,15 @@ try {
     $imgName = $imgName . ($ext ? '.' . $ext : '.jpg');
 
     $targetPath = targetSubmit . DIRECTORY_SEPARATOR . $imgName;
-    $datos['imgadress'] = $targetPath ;
+    $datos['imgadress'] = $targetPath ; */
     //verificar que no este vacio
     utils::vacia($datos);
     
     //registrar estudiante
     $pacientes = (new Estudiante())->setEstudiante($datos);
-    if (!move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
+/*     if (!move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
       throw new Exception("No se pudo mover el archivo a: $targetPath");
-    }
+    } */
     // redirigir al listado de estudiantes con un mensaje de exito
     if ($pacientes) {
       $_SESSION["success"] = "Estudiante registrado correctamente";

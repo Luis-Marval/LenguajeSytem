@@ -117,11 +117,10 @@ body {
   background-color: #cde9ce;
 }
 .table-bordered {
-  border: 1px solid #dee2e6;
 }
-.table-bordered th,
-.table-bordered td {
-  border: 1px solid #dee2e6;
+
+.table-bordered tr {
+  border-bottom: 1px solid #dee2e6;
 }
 .table-responsive {
   width: 100%;

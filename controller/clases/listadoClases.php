@@ -7,7 +7,7 @@ if (empty($_GET['idClase'])) {
   $page = (int)($_GET['pagina'] ?? 1);
   $offset = ($page - 1) * $PorPagina;
   $search = $_GET['search'] ?? null;
-  $total = ((new Clases())->countClases())[0][0];
+  $total = ((new Clases())->countClases());
   if ($search == null) {
     $lista = (new Clases)->getListadoClases(['min' => $offset, 'max' => $PorPagina]);
   } else {

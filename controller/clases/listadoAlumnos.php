@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     };
     $alumnos = (new Clases)->getAlumnosInscritos($id);
     $periodo = (new Clases)->getPeriodo($id);
-    $clase = (new Clases) ->getClasesPeriodos($periodo[0]["idClase"]);
+    $clase = (new Clases) ->getClasePeriodo($periodo[0]["idClase"]);
     $profesor = (new Profesores) ->getProfesor(['cedula' => $periodo[0]["idProfesor"]]);
     if (empty($alumnos) || empty($profesor)) {
       throw new Exception("Datos no ingresados");

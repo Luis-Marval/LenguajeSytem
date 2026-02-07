@@ -13,18 +13,6 @@ require_once(__DIR__ . '/config/router.php');
 require "vendor/autoload.php";
 Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . '/../')->load();
 
-
-spl_autoload_register(function ($className) {
-  // Convierte namespace a ruta de archivo
-  $file = __DIR__ . '/' . str_replace('\\', '/', $className) . '.php';
-
-  if (file_exists($file)) {
-    require_once $file;
-    return true;
-  }
-  return false;
-});
-
 if (URL === '/prueba') {
   require_once('./prueba.php');
   die();

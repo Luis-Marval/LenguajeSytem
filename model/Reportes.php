@@ -13,7 +13,7 @@ class Reportes extends Dompdf
     $options->set('isJavascriptEnabled', true);
     $options->set('isRemoteEnabled', true);
     $this->setOptions($options);
-    $this->setPaper("a4", "landscape");
+    $this->setPaper("a4", "portrait");
   }
   public function createPdf($title,$html, $name, $tream = false){
     $gola = $this-> struct($title,$html); 

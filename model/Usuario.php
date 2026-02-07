@@ -22,11 +22,10 @@ class Usuario
   public function comprobar($datos)
   {
     $resultado = $this->conexion->readOnly('usuarios', $datos);
-    return $resultado;
-    if ($resultado != false) {
-      return true;
+    if (empty($resultado)) {
+      return false;
     }
-    return false;
+    return $resultado;
   }
   public function userData($datos)
   {
@@ -45,7 +44,7 @@ class Usuario
       }
       if (password_verify($clave, $resultado['clave'])) {
         $_SESSION['email'] = $resultado["correo"];
-        $_SESSION['usuario'] = $resultado["nombre"];
+        $_SESSION['usuario'] = $resultado["nombre"] . " ".$resultado["apellido"] ;
         $_SESSION['id'] = $resultado["id"];
         $this->getRol($resultado['id']);
         return true;
@@ -68,7 +67,6 @@ class Usuario
       $view = $this->tableData . ' where `u`.`id`  = ?';
       $rol = $this->conexion->query($view, ["id" => $id]);
       $_SESSION["rol"] = $rol[0]['name'];
-      $_SESSION["id"] = $id;
     } catch (\Exception) {
       throw new \Exception('Fallo al obtener el usuario');
     }
@@ -79,9 +77,8 @@ class Usuario
   {
     try {
       $resultado = $this->comprobar(['correo' => $datos['correo']]);
-      $data = $this->userData(['correo' => $datos['correo']]);
       if ($resultado != false) {
-        if ($data['activo'] != 0) {
+        if ($resultado['activo'] != 0) {
           throw new \PDOException('Usuario ya existente');
         }
       }
@@ -89,7 +86,7 @@ class Usuario
       $datos['apellido'] = utils::sanear($datos['apellido']);
       $datos['correo'] = utils::sanearMail($datos['correo']);
       $datos['clave'] = password_hash($datos['clave'], PASSWORD_BCRYPT);
-      if ($resultado != false && $data['activo'] != 1) {
+      if ($resultado != false && !empty($resultado['activo']) && $resultado['activo'] != 1) {
         $datos['activo'] = 1;
         $resultado = $this->conexion->update($this->table, ['correo' => $datos['correo']], $datos);
         return $resultado;
@@ -100,35 +97,23 @@ class Usuario
       throw new \Exception("Error en el registro. Por favor, intenta de nuevo.");
     };
   }
-  public function newPAssword(string $clave, string $correo, bool $type = false)
+  public function newPAssword(string $clave, array $datos)
   {
     try {
-      if ($type == false) {
-        $id_usuario = $this->conexion->readOnly('usuarios', ['correo' => $correo])['id'];
-      } else {
-        $id_usuario = $this->conexion->readOnly('usuarios', ['correo' => $correo])['id'];
-      }
+      $id_usuario = $this->comprobar($datos)['id'];
       $clave = password_hash($clave, PASSWORD_BCRYPT);
-      $this->conexion->trasaction('begin');
-      $resultado = $this->conexion->update($this->table, ['id' => $id_usuario], ['clave' => $clave]);
-      $this->conexion->trasaction("commit");
+      $resultado = $this->conexion->modify('update usuarios set clave = :clave where id = :id', ['id' => $id_usuario, 'clave' => $clave], true);
       return $resultado;
     } catch (\PDOException $err) {
-      $this->conexion->trasaction("back");
       throw new \Exception('Fallo al Cambiar la clave');
-    };
+    }
   }
 
   public function getTotal($id = 0)
   {
-    $view = $this->tableData . ' where activo = ?';
+    $view = $this->tableData . ' where activo = 1';
     try {
-      if ($id == 0) {
-        $resultado = $this->conexion->query($view, ['activo' => 1]);
-      } else {
-        $view = $view . ' and `u`.`id` = ?';
-        $resultado = $this->conexion->query($view, ['activo' => 1, "id" => $id]);
-      }
+      $resultado = $this->conexion->query($view);
       return $resultado;
     } catch (\Throwable $th) {
       throw new \Exception($th->getMessage());
@@ -209,23 +194,18 @@ class Usuario
   }
   public function getTotalAdmins()
   {
-    $resultado = $this->conexion->readOnly('usuarios', ["rol" => 1, 'activo' => 1]);
+    $resultado = $this->conexion->query('select count(*) as total from usuarios where rol = ? and activo = ?', ["rol" => 1, 'activo' => 1]);
     return $resultado;
   }
 
   public function setAllAnalistasExcept(int $id)
   {
     try {
-      $this->conexion->trasaction('begin');
-      $sql = "UPDATE usuarios SET rol = 2 WHERE id != :id";
-      $stmt = $this->conexion->Dbpdo->prepare($sql);
-      $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
-      $stmt->execute();
+      $sql = "UPDATE usuarios SET rol = 3 WHERE id != :id";
       $this->setRol($id, 1);
-      $this->conexion->trasaction('commit');
+      $this->conexion->modify($sql, ['id' => $id], true);
       return true;
     } catch (\PDOException $err) {
-      $this->conexion->trasaction('back');
       throw new \Exception('Fallo al actualizar los roles de los usuarios');
     }
   }

@@ -2,9 +2,9 @@
 $title = "Ficha Profesor";
 require_once "./views/view.struct.php";
 echo $parte1; ?>
-<main class="flex-grow p-6">
+<main class="flex-grow p-6  main-scroll">
   <div class="w-full flex justify-between mb-2">
-    <h1 class="text-4xl mb-2 text-primary w-50 i"> Datos del profesor</h1>
+    <h1 class="text-2xl mb-2 text-primary w-50 i"> Datos del profesor</h1>
     <div class="flex items-center gap-4">
       <button class="btn cursor-pointer bg-red-600" title="Eliminar Docente" data-cedula="<?php echo $profesor['cedula'] ?>">
         <svg xmlns="http://www.w3.org/2000/svg" class="text-white" width="24" height="24" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@ echo $parte1; ?>
                   </p>
                 </div>
                 <div>
-                  <p><strong>Telefono:</strong>
+                  <p><strong>Teléfono:</strong>
                   <div class="border-solid border-2 p-2  bd-secondary"><?php echo $profesor["telefono"] ?></div>
                   </p>
                 </div>

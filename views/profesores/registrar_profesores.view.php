@@ -4,7 +4,7 @@ require_once "./views/view.struct.php";
 echo $parte1; ?>
 <main class="flex-grow p-6">
   <div class="min-h-min mb-8">
-    <h1 class="text-4xl text-primary text-center">
+    <h1 class="text-2xl text-primary text-center">
       Registrar Profesor
     </h1>
   </div>
@@ -29,7 +29,7 @@ echo $parte1; ?>
             <input type="text" step="1" id="input-apellido" class="form-input" name="apellido" pattern="[a-zA-Z0-9._%+-]" title="Ingresa el apellido del paciente" required>
           </div>
           <div>
-            <label for="input-telefono" class="text-gray-800 text-sm font-medium inline-block mb-2">Telefono:</label>
+            <label for="input-telefono" class="text-gray-800 text-sm font-medium inline-block mb-2">Teléfono:</label>
             <input type="number" id="input-telefono" class="form-input" name="telefono" title="Ingresa el Telefono del paciente" required>
           </div>
           <div>

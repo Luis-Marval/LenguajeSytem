@@ -13,8 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       'horaInicio' => utils::sanear($_POST['horaInicio']),
       'horaFin' => utils::sanear($_POST['horaFin']),
       'monto' => utils::sanear($_POST['costo']),
+      'modalidad' => utils::sanear($_POST['modalidad']),
     ];
-    $res = (new Clases)->createClase($datos);
+    (new Clases)->createClase($datos);
     unset($datos);
     $_SESSION['success'] = "Clase creada correctamente";
     header("location:" . PATH . "clases/inscripciones");

@@ -3,8 +3,8 @@ $title = "Crear Clases";
 require_once "./views/view.struct.php";
 echo $parte1; ?>
 <main class="p-6">
-  <div class="min-h-min mb-8">
-    <h1 class="text-4xl text-primary text-center"> Clase</h1>
+  <div class="min-h-min mb-4">
+    <h1 class="text-2xl text-primary">Crear Clase</h1>
   </div>
   <div class="flex flex-col gap-6">
     <div class="card">
@@ -31,14 +31,22 @@ echo $parte1; ?>
             </div>
             <div class="">
               <label for="tipo" class="text-gray-800 text-sm font-medium inline-block mb-2">Horario:</label>
-              <select type="text" id="tipo" class="form-select" name="tipo" title="Seleccione el Tipo de la clase" required>
+              <select id="tipo" class="form-select" name="tipo" title="Seleccione el Tipo de la clase" required>
                 <option value="matutino">Matutino</option>
                 <option value="vespertino">Vespertino</option>
                 <option value="nocturno">Nocturno</option>
               </select>
             </div>
           </div>
-          <div class="w-full grid grid-cols-2 gap-4">
+          <div class="w-full grid grid-cols-3 gap-4">
+            <div>
+              <label for="modalidad" class="text-gray-800 text-sm font-medium inline-block mb-2">Modalidad:</label>
+              <select id="modalidad" class="form-select" name="modalidad" title="Seleccione la modalidad de la clase" required>
+                <option value="presencial">Presencial</option>
+                <option value="online">Online</option>
+                <option value="mixto">Mixto</option>
+              </select>
+            </div>
             <div>
               <label for="nivel" class="text-gray-800 text-sm font-medium inline-block mb-2">Nivel:</label>
               <input type="number" step="1" class="form-input" name="nivel" id="nivel" pattern="[a-zA-Z0-9._%+-]" title="Ingresa la cantidad que posee la presentacion" required>

@@ -18,6 +18,7 @@ $routes = array(
   '/clases/periodo' => "/clases/periodo", // donde se inscribiran los estudiantes
   '/clases/listadoClase' => "/clases/listadoAlumnos",// PDF de la clase
   '/clases/inscripciones' => "/clases/inscripciones",
+  '/clases/actualizar'=>"/clases/actualizarClases",
   // Estudiantes
   '/estudiantes/info'=>"/estudiantes/info_estudiantes",
   '/estudiantes/listado' => '/estudiantes/list_estudiantes',
@@ -33,12 +34,12 @@ $routes = array(
 
   // Pagos
   '/pagos/listado' => '/pagos/listado',
+  '/pagos/abono' => '/pagos/abono',
 
   //otros
   '/Notificaciones/Historial' => '/Notificaciones/Historial',
   '/eliminarUsuario' => '/usuarios/eliminar',
   '/cambiarContrasena' => '/usuarios/cambiarContraseña',
-  '/cambiarRolusuario' => '/usuarios/cambiarRol',
   '/cambiarRolusuario' => '/usuarios/cambiarRol',
   '/paciente/eliminar_informe' => '/estudiantes/eliminar_informe',
   '/inventario/existencias' => '/inventario/lista_stock',

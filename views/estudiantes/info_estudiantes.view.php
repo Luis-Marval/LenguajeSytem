@@ -4,8 +4,8 @@ require_once "./views/view.struct.php";
 echo $parte1; ?>
 <main class="flex-grow p-6 main-scroll">
 
-  <div class="w-full flex justify-between mb-2">
-    <h1 class="text-4xl mb-2 text-primary w-50 i"> Datos del estudiante</h1>
+  <div class="w-full flex justify-between mb-2 items-center">
+    <h1 class="text-2xl mb-2 text-primary w-50 i"> Datos del estudiante</h1>
     <a href="<?php echo PATH . 'estudiantes/actualizar?cedula=' . $estudiante['cedula']; ?>" class="btn bg-primary text-white">Actualizar Datos</a>
   </div>
   <?php require_once "./views/templates/message/success.php" ?>
@@ -13,9 +13,9 @@ echo $parte1; ?>
   <div class="card bg-white shadow-md rounded-lg ">
     <div class="p-6">
       <div class="overflow-x-auto">
-        <section class="mb-4">
+        <section class="">
           <div class="grid grid-cols-1 md:grid-cols-1">
-            <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="grid grid-cols-3 gap-4">
               <div>
                 <p><strong>Cedula:</strong>
                 </p>
@@ -48,7 +48,7 @@ echo $parte1; ?>
                 </p>
               </div>
               <div>
-                <p><strong>Telefono:</strong>
+                <p><strong>Teléfono:</strong>
                 <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["telefono"] ?></div>
                 </p>
               </div>
@@ -56,10 +56,6 @@ echo $parte1; ?>
                 <p><strong>Direccion:</strong></p>
                 <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["residencia"] ?></div>
 
-              </div>
-              <div class="full-width-item ">
-                <p><strong>Docmuento:</strong></p>
-                <img style="height: 300px;object-fit:contain" src=<?php echo PATH . $estudiante["imgadress"] ?> alt="imagen de documento">
               </div>
             </div>
           </div>

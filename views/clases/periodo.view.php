@@ -3,6 +3,7 @@ $title = "Inscripciones";
 require_once "./views/view.struct.php";
 echo $parte1; ?>
 <main class="flex-grow p-6 relative  main-scroll">
+  <h1 class="text-2xl text-primary">Gestion de Inscripcion</h1>
   <!-- Contenedor de notificaciones -->
   <div class="alertContainer">
     <?php require_once "./views/templates/message/error.php";
@@ -36,27 +37,25 @@ echo $parte1; ?>
             </div>
           </div>
           <div>
-            <div class="grid grid-cols-2 gap-3">
-              <div class="autocomplete-container">
+            <div class="grid grid-cols-4 gap-3">
+              <div class="autocomplete-container col-start-1 col-end-4">
                 <label for="input-principio" class="text-gray-800 text-sm font-medium inline-block mb-2">Profesor</label>
                 <input type="text" class="form-select" id="input-principio" title="Ingresa el profesor" required name="principio" autocomplete="off" value="">
                 <div id="dropdown-options" class="dropdown-options"></div>
-                <input type="hidden" id="periodo" value="<?php echo $periodo[0]['id'] ?>" name="periodo">
               </div>
-              <div class="">
+              <div class="col-start-4">
                 <label for="input-date" class="text-gray-800 text-sm font-medium inline-block mb-2">Fecha de Finalizacion</label>
                 <input type="date" class="form-input" id="input-date" title="Ingresa la fecha de finalizacion" required autocomplete="off" value="<?php if (!empty($periodoData[0]['finalizacion'])) echo $periodoData[0]['finalizacion'] ?>" onchange="setDate()">
-                <input type="hidden" id="periodo" value="<?php echo $periodo[0]['id'] ?>" name="periodo">
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="card w-full mt-2">
-        <div class="flex justify-between w-full items-center px-2">
+        <div class="flex justify-between w-full items-center px-2 pt-2">
           <h2 class=" text-primary dark:text-primary align-middle"> Alumnos Inscritos</h2>
           <button type="button" id="agregar"
-            class="btn mt-2 mb-2 bg-primary text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
+            class="btn text-xl bg-primary text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
             +
           </button>
         </div>
@@ -68,7 +67,7 @@ echo $parte1; ?>
               <th>Cedula</th>
               <th>Nombre</th>
               <th>Correo</th>
-              <th>Telefono</th>
+              <th>Teléfono</th>
               <th>Pago</th>
               <th>#</th>
             </tr>
@@ -76,6 +75,7 @@ echo $parte1; ?>
           <tbody id="tabla-resultados" class="text-center">
           </tbody>
         </table>
+        <div class="w-full flex justify-end px-4 pb-3"> <button class="flex items-center gap-2 px-8 py-3 bg-primary hover:bg-blue-800 text-white font-semibold rounded-lg shadow-lg shadow-blue-900/20 transition-all hover:-translate-y-0.5 active:translate-y-0">Finalizar Inscripción</button></div>
       </div>
     </div>
   </div>
@@ -100,7 +100,7 @@ echo $parte1; ?>
               <th>Cedula</th>
               <th>Nombre</th>
               <th>Correo</th>
-              <th>Telefono</th>
+              <th>Teléfono</th>
               <th>#</th>
             </tr>
           </thead>
@@ -151,6 +151,34 @@ echo $parte1; ?>
     <div class="mt-4 flex justify-end gap-2">
       <button id="confirm-change-no" onclick="hideChangeModal()" class="btn bg-gray-300">Cancelar</button>
       <button id="confirm-change-yes" class="btn bg-primary text-white">Permitir cambio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirmar Finalizar Inscripción -->
+<div id="modal-finalizar" class="hidden absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-11/12">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">Finalizar Inscripción</h2>
+      <button onclick="cerrarModalFinalizar()" class="text-red-600 hover:text-red-800 text-2xl font-bold">&times;</button>
+    </div>
+
+    <p class="text-gray-700 mb-8 text-lg">
+      ¿Está seguro que desea <strong>finalizar la inscripción</strong> de esta clase?<br>
+      <span class="text-sm text-gray-500 mt-2 block">
+        Una vez finalizada no se podrán agregar ni quitar alumnos.
+      </span>
+    </p>
+
+    <div class="flex justify-end gap-4">
+      <button onclick="cerrarModalFinalizar()"
+        class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg transition">
+        No, cancelar
+      </button>
+      <button id="btn-confirmar-finalizar"
+        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition">
+        Sí, finalizar
+      </button>
     </div>
   </div>
 </div>
@@ -340,6 +368,7 @@ echo $parte1; ?>
   // Añade los datos del estudiante inscrito a la lista de inscritos
 
   function addTable(item) {
+
     const tr = document.createElement('tr');
     tr.className = 'text-black font-semibold font-sans ';
     const cedula = item.cedula || item.cedula_estudiante || '';
@@ -347,28 +376,17 @@ echo $parte1; ?>
     const apellido = item.apellido || '';
     const correo = item.email || '';
     const telefono = item.telefono || '';
-    const pagoTag = (alumno.estado_pago !== null) ? `<span class="bg-success/25 text-success" style=" padding: 7.5px; border-radius: 25px;">${alumno.estado_pago}%</span>` : `<span class="bg-warning/25 text-warning" style=" padding: 7.5px; border-radius: 25px;">Pendiente</span>`;
-    tr.className = 'text-black font-semibold font-sans';
-    const botonPago = (alumno.estado_pago === null || alumno.estado_pago === undefined) ?
-      `<button class="btn bg-green-600 text-white hover:text-white px-2 py-1 rounded col-start-2" onclick="abrirModalPago('${ced}')"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6C7.03 6 2 7.546 2 10.5v4C2 17.454 7.03 19 12 19s10-1.546 10-4.5v-4C22 7.546 16.97 6 12 6m-8 8.5v-1.197a10 10 0 0 0 2 .86v1.881c-1.312-.514-2-1.126-2-1.544m12 .148v1.971c-.867.179-1.867.31-3 .358v-2a22 22 0 0 0 3-.329m-5 2.33a19 19 0 0 1-3-.358v-1.971c.959.174 1.972.287 3 .33zm7-.934v-1.881a10 10 0 0 0 2-.86V14.5c0 .418-.687 1.03-2 1.544M12 13c-5.177 0-8-1.651-8-2.5S6.823 8 12 8s8 1.651 8 2.5s-2.823 2.5-8 2.5"/></svg></button>` : '';
-    const size = (alumno.estado_pago === null || alumno.estado_pago === undefined) ?
-      `col-start-3` : 'col-start-2 col-end-4';
-    const quitarButton = (alumno.estado_pago !== null || alumno.estado_pago !== undefined) ?
-      `disabled` : '';
     tr.innerHTML = `
             <th id="cedula+${cedula}">${cedula}</th>
             <th id="nombre+${cedula}">${nombre} ${apellido}</th>
             <th id="correo+${cedula}">${correo}</th>
-            <th id="telefono+${cedula}">${telefono}</th>
-            <th id="pago+${cedula}">Pendiente</th>
-            <th class="grid grid-cols-4 gap-1 items-center justify-center">
-${botonPago}
-              <button class="btn bg-red-600 text-white  px-2 py-1 rounded ${size} ${quitarButton}"  onclick="quitarAlumnoConValidacion('${ced}', ${periodo_id}, this)">X</button>
-            </th>
+            <th id="teléfono+${cedula}">${telefono}</th>
+            <th><button class="btn-inscripcion bg-primary text-white px-2 py-1 rounded" data-inscrito="0" onclick="toggleInscripcion('${cedula}', this)">Inscribir</button></th>
           `;
     tr.classList.add('mb-2');
     return tr
   }
+
 
   // Agregar handler para el boton agregar: pedir lista de alumnos aptos y poblar #tabla-alumnos
   document.getElementById('agregar').addEventListener('click', function(e) {
@@ -395,6 +413,7 @@ ${botonPago}
       .then(res => {
 
         let lista = res.data;
+        console.log(res)
         // const lista = Array.isArray(res?.data) ? res.data : (res?.data ? [res.data] : []);
 
         const tbody = document.getElementById('tabla-alumnos');
@@ -408,7 +427,6 @@ ${botonPago}
         } else {
 
           lista.forEach(item => {
-            console.log(item)
             tr = addTable(item)
             tbody.appendChild(tr);
           });
@@ -658,30 +676,30 @@ ${botonPago}
         }
         lista.forEach(alumno => {
           const tr = document.createElement('tr');
-          const ced = alumno.cedula || '';
+          const cedula = alumno.cedula || '';
           const nombre = alumno.nombre || '';
           const apellido = alumno.apellido || '';
           const correo = alumno.email || '';
           const telefono = alumno.telefono || '';
-          const txt =  (alumno.estado_pago == 60)? '60% (pendiente)':'100% (Completo)';
+          const txt = (alumno.estado_pago == 60) ? '60% (pendiente)' : '100% (Completo)';
 
           const pagoTag = (alumno.estado_pago !== null) ? `<span class="bg-success/25 text-success" style=" padding: 7.5px; border-radius: 25px;">${txt}</span>` : `<span class="bg-warning/25 text-warning" style=" padding: 7.5px; border-radius: 25px;">Pendiente</span>`;
           tr.className = 'text-black font-semibold font-sans';
           const botonPago = (alumno.estado_pago === null || alumno.estado_pago === undefined) ?
-            `<button class="btn bg-green-600 text-white hover:text-white px-2 py-1 rounded col-start-2" onclick="abrirModalPago('${ced}')"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6C7.03 6 2 7.546 2 10.5v4C2 17.454 7.03 19 12 19s10-1.546 10-4.5v-4C22 7.546 16.97 6 12 6m-8 8.5v-1.197a10 10 0 0 0 2 .86v1.881c-1.312-.514-2-1.126-2-1.544m12 .148v1.971c-.867.179-1.867.31-3 .358v-2a22 22 0 0 0 3-.329m-5 2.33a19 19 0 0 1-3-.358v-1.971c.959.174 1.972.287 3 .33zm7-.934v-1.881a10 10 0 0 0 2-.86V14.5c0 .418-.687 1.03-2 1.544M12 13c-5.177 0-8-1.651-8-2.5S6.823 8 12 8s8 1.651 8 2.5s-2.823 2.5-8 2.5"/></svg></button>` : '';
+            `<button class="btn bg-green-600 text-white hover:text-white px-2 py-1 rounded col-start-2" onclick="abrirModalPago('${cedula}')"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 6C7.03 6 2 7.546 2 10.5v4C2 17.454 7.03 19 12 19s10-1.546 10-4.5v-4C22 7.546 16.97 6 12 6m-8 8.5v-1.197a10 10 0 0 0 2 .86v1.881c-1.312-.514-2-1.126-2-1.544m12 .148v1.971c-.867.179-1.867.31-3 .358v-2a22 22 0 0 0 3-.329m-5 2.33a19 19 0 0 1-3-.358v-1.971c.959.174 1.972.287 3 .33zm7-.934v-1.881a10 10 0 0 0 2-.86V14.5c0 .418-.687 1.03-2 1.544M12 13c-5.177 0-8-1.651-8-2.5S6.823 8 12 8s8 1.651 8 2.5s-2.823 2.5-8 2.5"/></svg></button>` : '';
           const size = (alumno.estado_pago === null || alumno.estado_pago === undefined) ?
             `col-start-3 bg-red-600 ` : 'col-start-2 col-end-4 bg-gray-300';
           const quitarButton = (alumno.estado_pago !== null || alumno.estado_pago !== undefined) ?
             `disabled` : '';
           tr.innerHTML = `
-            <th>${ced}</th>
+            <th>${cedula}</th>
             <th>${nombre} ${apellido}</th>
             <th>${correo}</th>
             <th>${telefono}</th>
-            <th id="pago-${ced}">${pagoTag}</th>
-            <th class="grid grid-cols-4 gap-1 items-center justify-center">
+            <th id="pago-${cedula}">${pagoTag}</th>
+            <th id="buttons-${cedula}" class="grid grid-cols-4 gap-1 items-center justify-center">
 ${botonPago}
-              <button class="btn text-white  px-2 py-1 rounded ${size}"  onclick="quitarAlumnoConValidacion('${ced}', ${periodo_id}, this)">X</button>
+              <button class="btn text-white  px-2 py-1 rounded ${size}"  onclick="quitarAlumnoConValidacion('${cedula}', ${periodo_id}, this)">X</button>
             </th>
           `;
           tr.classList.add('mb-2')
@@ -761,10 +779,9 @@ ${botonPago}
         if (resp && resp.success) {
           const celda = document.getElementById(`pago-${cedulaActual}`);
           if (celda) {
-
             let texto = "";
             if (resp.estado_pago === '100') {
-              texto = '100%';
+              texto = '100% (Completo)';
             } else if (resp.estado_pago === '60') {
               texto = '60% (pendiente)';
             } else {
@@ -772,6 +789,11 @@ ${botonPago}
             }
             celda.innerHTML = `<span class="bg-success/25 text-success" style=" padding: 7.5px; border-radius: 25px;">${texto}</span>`
           }
+          const button = document.getElementById(`buttons-${cedulaActual}`);
+          if (button) {
+            button.innerHTML = `<button class="btn text-white px-2 py-1 rounded col-start-2 col-end-4 bg-gray-300" onclick="quitarAlumnoConValidacion('${cedulaActual}', ${periodo_id}, this)">X</button>`
+          }
+
           new notificationsMessage('success', 'Pago inicial registrado correctamente');
           cerrarModalPago();
         } else {
@@ -783,5 +805,57 @@ ${botonPago}
         new notificationsMessage('error', 'Error al registrar el pago inicial');
       });
   }
+
+  //Finalizar Inscripcion
+  // ------------------- Finalizar Inscripción -------------------
+
+  function abrirModalFinalizar() {
+    const modal = document.getElementById('modal-finalizar');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function cerrarModalFinalizar() {
+    const modal = document.getElementById('modal-finalizar');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  // Conectar el botón principal "Finalizar Inscripción"
+  document.querySelector('.flex.justify-end.px-4.pb-3 button')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    abrirModalFinalizar();
+  });
+
+  // Conectar el botón "Sí, finalizar" dentro del modal
+  document.getElementById('btn-confirmar-finalizar')?.addEventListener('click', function(e) {
+    e.preventDefault()
+    fetch('<?php echo CompletePath ?>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'finalizar_inscripcion',
+          periodo_id: periodo_id
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          new notificationsMessage('success', 'Inscripción finalizada correctamente');
+          window.location.href = "<?php echo PATH ?>clases/inscripciones"
+          cerrarModalFinalizar();
+
+          // Opcional: deshabilitar botones de acción para que no se pueda modificar más
+          document.getElementById('agregar').disabled = true;
+          document.querySelector('.flex.justify-end.px-4.pb-3 button').disabled = true;
+        } else {
+          new notificationsMessage('error', data.error || 'No se pudo finalizar la inscripción');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        new notificationsMessage('error', 'Error al conectar con el servidor');
+      });
+  });
 </script>
 <?php echo $parte2; ?>

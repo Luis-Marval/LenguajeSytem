@@ -6,7 +6,7 @@ $PorPagina = $_GET['PorPagina'] ?? 10;
 $page = (int)($_GET['pagina'] ?? 1);
 $offset = ($page - 1) * $PorPagina;
 $search = $_GET['search'] ?? null;
-$total = ((new Clases())->countHistorial())[0][0];
+$total = ((new Clases())->countHistorial());
 $lista = (new Clases)->getHistorialClases(['min' => $offset, 'max' => $PorPagina]);
 $cantidad = (sizeof($lista));
 // Número inicial mostrado en la página (si no hay elementos será 0)
