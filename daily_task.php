@@ -6,6 +6,8 @@ use model\Reportes;
 use model\Profesores;
 use model\Mail;
 
+use function PHPUnit\Framework\throwException;
+
 function sendMail($id)
 {
   try {
@@ -41,7 +43,7 @@ function sendMail($id)
     <h3 class="text-center">Listado de alumnos</h3>
     <h3 class="text-center">Idioma:<?php echo $claseData[0]['name']; ?> </h3>
     <h3 class="text-center"> Nivel:<?php echo $claseData[0]['nivel']; ?> Horario:<?php echo $claseData[0]['tipo']; ?> Tipo:<?php echo $claseData[0]['horario']; ?></h3>
-    <h4 class="text-center">PROFESOR(A): <?php echo $profesor['nombre'] . " " . $profesor['apellido'] . " " . $profesor['cedula'] ?></h4>
+    <h4 class="text-center">PROFESOR(A): <?php echo $profesor['nombre'] . " " . $profesor['apellido'] . " " . $profesor['tipoDocumento'].$profesor['cedula'] ?></h4>
     <table>
       <thead class="">
         <tr>
@@ -60,7 +62,7 @@ function sendMail($id)
         ?>
           <tr>
             <td><?php echo $i++; ?></td>
-            <td><?php echo $item['nacionalidad'] . $item['cedula']; ?></td>
+            <td><?php echo $item['tipoDocumento'] . $item['cedula']; ?></td>
             <td><?php echo $item['nombre']; ?></td>
             <td><?php echo $item['apellido']; ?></td>
             <td><?php echo $item['telefono']; ?></td>
@@ -107,13 +109,11 @@ function sendMail($id)
     // Limpiar archivo temporal
     unlink($tempFilePath);
 
-    $results = [
-      'periodo' => $id,
-      'profesor' => $profesor['nombre'] . " " . $profesor['apellido'],
-      'email' => $profesor['email'],
+    return [
       'status' => 'success',
       'message' => 'PDF generado y enviado correctamente'
     ];
   } catch (Exception $e) {
+    throw new Exception($e->getMessage());
   }
 }
