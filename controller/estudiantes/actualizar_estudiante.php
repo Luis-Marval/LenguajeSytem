@@ -14,6 +14,7 @@ try {
       'email' => utils::sanear($_POST['correo']),
       'residencia' => utils::sanear($_POST['Residencia']),
       'nacionalidad' => utils::sanear($_POST['nacionalidad']),
+      'tipoDocumento' => utils::sanear($_POST['tipoDocumento'])
     ];
     utils::vacia($datos);
     //registrar Profesor

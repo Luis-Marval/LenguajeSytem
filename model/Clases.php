@@ -276,7 +276,7 @@ class Clases
 
   public function getAlumnosInscritos($id)
   {
-    $view = "SELECT e.cedula, CONCAT(e.nombre, ' ', e.apellido) AS estudiante_completo,e.nombre,e.apellido , e.email, e.telefono,e.nacionalidad, DATE(ep.fecha_inscripcion) AS fecha_inscripcion,pe.estado_pago FROM estudiantes e left JOIN estudiante_periodo ep ON e.cedula = ep.estudiante_id left JOIN pagos_estudiante pe ON pe.estudiante_periodo_id = ep.id WHERE ep.periodo_id = ?  ORDER BY e.cedula;";
+    $view = "SELECT e.cedula, CONCAT(e.nombre, ' ', e.apellido) AS estudiante_completo,e.nombre,e.apellido , e.email, e.telefono,e.nacionalidad,e.tipoDocumento, DATE(ep.fecha_inscripcion) AS fecha_inscripcion,pe.estado_pago FROM estudiantes e left JOIN estudiante_periodo ep ON e.cedula = ep.estudiante_id left JOIN pagos_estudiante pe ON pe.estudiante_periodo_id = ep.id WHERE ep.periodo_id = ?  ORDER BY e.cedula;";
     try {
       $res = $this->conexion->query($view, [$id]);
       return $res;
@@ -290,7 +290,7 @@ class Clases
   {
     try {
       if ($datos['nivel'] == 1) {
-        $view = 'SELECT e.cedula, e.nombre, e.apellido, e.email, e.telefono, e.fecha_nacimiento FROM estudiantes e LEFT JOIN estudiante_periodo ep ON e.cedula = ep.estudiante_id WHERE ep.estudiante_id IS NULL ORDER BY e.apellido, e.nombre;';
+        $view = 'SELECT e.cedula, e.nombre, e.apellido,e.tipoDocumento, e.email, e.telefono, e.fecha_nacimiento FROM estudiantes e LEFT JOIN estudiante_periodo ep ON e.cedula = ep.estudiante_id WHERE ep.estudiante_id IS NULL ORDER BY e.apellido, e.nombre;';
         $res = $this->conexion->query($view);
       } else {
         $datos['nivel'] = $datos['nivel'] - 1;

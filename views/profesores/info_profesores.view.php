@@ -29,7 +29,7 @@ echo $parte1; ?>
                   <p><strong>Cedula:</strong>
                   </p>
                   <div class="border-solid border-2 p-2 bd-secondary flex justify-between">
-                    <span id="cedula"><?php echo $profesor["nacionalidad"] . $profesor["cedula"] ?></span>
+                    <span id="cedula"><?php echo $profesor["tipoDocumento"] . $profesor["cedula"] ?></span>
                   </div>
                 </div>
                 <div>
@@ -43,7 +43,7 @@ echo $parte1; ?>
                   </p>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="grid grid-cols-3 gap-4 mb-4">
                 <div>
                   <p><strong>correo:</strong>
                   <div class="border-solid border-2 p-2  bd-secondary"><?php echo $profesor["email"] ?></div>
@@ -52,6 +52,11 @@ echo $parte1; ?>
                 <div>
                   <p><strong>Teléfono:</strong>
                   <div class="border-solid border-2 p-2  bd-secondary"><?php echo $profesor["telefono"] ?></div>
+                  </p>
+                </div>
+                                <div>
+                  <p><strong>Nacionalidad:</strong>
+                  <div class="border-solid border-2 p-2  bd-secondary"><?php echo $profesor["nacionalidad"] ?></div>
                   </p>
                 </div>
               </div>

@@ -27,7 +27,7 @@ echo $parte1; ?>
                     <option value='P'>P - Pasaporte</option>
                   </select>
                 </div>
-                <input type="number" step="1" class="form-input w-full" id="cedula" name="cedula" pattern="[a-zA-Z0-9._%+-]" title="Ingresa la cedula" required autofocus>
+                <input type="number" step="1" class="form-input w-full" id="cedula" name="cedula" title="Ingresa la cedula" required autofocus>
               </div>
             </div>
           </div>

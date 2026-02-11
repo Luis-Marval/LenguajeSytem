@@ -31,7 +31,7 @@ echo $parte1;
           <tbody class="text-center">
             <?php foreach ($lista as $lista): ?>
               <tr class="border-b border-black filas-row" id='<?php echo $lista['cedula'] ?>'>
-                <td scope="col" class="px-6 py-3"><?php echo $lista["nacionalidad"] . $lista["cedula"] ?></td>
+                <td scope="col" class="px-6 py-3"><?php echo $lista["tipoDocumento"] . $lista["cedula"] ?></td>
                 <td scope="col" class="px-6 py-3"><?php echo $lista["nombre"] . " " . $lista["apellido"]; ?></td>
                 <td scope="col" class="px-6 py-3"><?php echo $lista["telefono"]; ?></td>
                 <td scope="col" class="px-6 py-3 truncate"><?php echo $lista["email"]; ?></td>

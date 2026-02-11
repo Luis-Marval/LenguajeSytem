@@ -20,7 +20,7 @@ echo $parte1; ?>
                 <p><strong>Cedula:</strong>
                 </p>
                 <div class="border-solid border-2 p-2 bd-secondary flex justify-between">
-                  <span id="cedula"><?php echo $estudiante["nacionalidad"] . $estudiante["cedula"] ?></span>
+                  <span id="cedula"><?php echo $estudiante["tipoDocumento"] . $estudiante["cedula"] ?></span>
                 </div>
               </div>
               <div>
@@ -52,10 +52,19 @@ echo $parte1; ?>
                 <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["telefono"] ?></div>
                 </p>
               </div>
-              <div class="full-width-item ">
+            </div>
+            <div class="grid grid-cols-4 gap-4 mb-4">
+              <div class="">
+                <p><strong>Nacionalidad:</strong></p>
+                <div class="border-solid border-2 p-2  bd-secondary col-end-1">
+                  <?php 
+                      if($estudiante["nacionalidad"] == 'V')echo 'Venezolano';
+                      if($estudiante["nacionalidad"] == 'E')echo 'Extranjero';
+                  ?></div>
+              </div>
+              <div class="col-start-2 col-end-5">
                 <p><strong>Direccion:</strong></p>
-                <div class="border-solid border-2 p-2  bd-secondary"><?php echo $estudiante["residencia"] ?></div>
-
+                <div class="border-solid border-2 p-2  bd-secondary "><?php echo $estudiante["residencia"] ?></div>
               </div>
             </div>
           </div>

@@ -285,7 +285,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $profesores = (new Profesores)->getProfesor();
     foreach ($profesores as $i => $profesor) {
       $profesores[$i]['text'] =
-        ($profesor['nacionalidad'] ?? '') . ($profesor['cedula'] ?? '') . ' ' .
+        ($profesor['tipoDocumento'] ?? '') . ($profesor['cedula'] ?? '') . ' ' .
         ($profesor['nombre'] ?? '') . ' ' . ($profesor['apellido'] ?? '') . ' ' .
         ($profesor['email'] ?? '');
     }

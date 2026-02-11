@@ -31,7 +31,7 @@ echo $parte1;
           <tbody class="text-center dark:text-white text-black">
             <?php foreach ($lista as $lista): ?>
               <tr class="border-b border-black dark:border-black filas-row" data-cedula=<?php echo $lista["cedula"] ?>>
-                <td scope="col" class="px-6 py-3"><?php echo $lista["nacionalidad"] . $lista["cedula"] ?></td>
+                <td scope="col" class="px-6 py-3"><?php echo $lista["tipoDocumento"] . $lista["cedula"] ?></td>
                 <td scope="col" class="px-6 py-3"><?php echo $lista["nombre"] . " " . $lista["apellido"]; ?></td>
                 <td scope="col" class="px-6 py-3"><?php echo (new DateTime($lista["fecha_nacimiento"]))->format('d/m/Y'); ?></td>
                 <td scope="col" class="px-6 py-3"><?php echo $lista["telefono"]; ?></td>

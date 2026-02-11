@@ -236,7 +236,7 @@ echo $parte1; ?>
       if (idProf) {
         const encontrado = optios.find(p => (p.cedula == idProf));
         if (encontrado) {
-          const text = (encontrado.nacionalidad || '') + (encontrado.cedula || '') + ' ' + (encontrado.nombre || '') + ' ' + (encontrado.apellido || '') + ' ' + (encontrado.email || '');
+          const text = (encontrado.tipoDocumento || '') + (encontrado.cedula || '') + ' ' + (encontrado.nombre || '') + ' ' + (encontrado.apellido || '') + ' ' + (encontrado.email || '');
           input.value = text;
           input.dataset.selectedValue = encontrado.cedula;
           actualizarEstadoBotonAgregar();
@@ -303,7 +303,7 @@ echo $parte1; ?>
 
     optionsToShow.forEach(optios => {
       const optionElement = document.createElement("div");
-      const text = optios.nacionalidad + optios.cedula + ' ' + optios.nombre + " " + optios.apellido + " " + optios.email;
+      const text = optios.tipoDocumento + optios.cedula + ' ' + optios.nombre + " " + optios.apellido + " " + optios.email;
       optionElement.textContent = text;
       optionElement.dataset.value = optios.cedula;
       optionElement.classList.add("dropdown-item");
@@ -371,13 +371,14 @@ echo $parte1; ?>
 
     const tr = document.createElement('tr');
     tr.className = 'text-black font-semibold font-sans ';
+    const tipoDocumento = item.tipoDocumento || '';
     const cedula = item.cedula || item.cedula_estudiante || '';
     const nombre = item.nombre || '';
     const apellido = item.apellido || '';
     const correo = item.email || '';
     const telefono = item.telefono || '';
     tr.innerHTML = `
-            <th id="cedula+${cedula}">${cedula}</th>
+            <th id="cedula+${cedula}">${tipoDocumento}${cedula}</th>
             <th id="nombre+${cedula}">${nombre} ${apellido}</th>
             <th id="correo+${cedula}">${correo}</th>
             <th id="teléfono+${cedula}">${telefono}</th>
@@ -692,7 +693,7 @@ echo $parte1; ?>
           const quitarButton = (alumno.estado_pago !== null || alumno.estado_pago !== undefined) ?
             `disabled` : '';
           tr.innerHTML = `
-            <th>${cedula}</th>
+            <th>${alumno.tipoDocumento}${cedula}</th>
             <th>${nombre} ${apellido}</th>
             <th>${correo}</th>
             <th>${telefono}</th>

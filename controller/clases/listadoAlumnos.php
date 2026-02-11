@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h3 class="text-center">Listado de alumnos</h3>
     <h3 class="text-center">Idioma:<?php echo $clase[0]['name'];?> </h3>
     <h3 class="text-center"> Nivel:<?php echo $clase[0]['nivel'];?>  Horario:<?php echo $clase[0]['tipo'];?>  Tipo:<?php echo $clase[0]['horario'];?></h3>
-    <h4 class="text-center">PROFESOR(A): <?php echo $profesor['nombre']." ".$profesor['apellido']." ".$profesor['cedula']?></h4>
+    <h4 class="text-center">PROFESOR(A): <?php echo $profesor['nombre']." ".$profesor['apellido']." ".$profesor['tipoDocumento'].$profesor['cedula']?></h4>
     <table>
       <thead class="">
         <tr>
@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ?>
           <tr>
             <td><?php echo $i++; ?></td>
-            <td><?php echo $item['nacionalidad']. $item['cedula']; ?></td>
+            <td><?php echo $item['tipoDocumento']. $item['cedula']; ?></td>
             <td><?php echo $item['nombre']; ?></td>
             <td><?php echo $item['apellido']; ?></td>
             <td><?php echo $item['telefono']; ?></td>

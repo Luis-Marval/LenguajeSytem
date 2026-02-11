@@ -17,9 +17,20 @@ echo $parte1; ?>
       <div class="p-6">
         <form method="POST" action="<?php echo CompleteURL ?>" class="grid lg:grid-cols-3 gap-6">
           <div>
-            <label for="cedula" class="text-gray-800 text-sm font-medium inline-block mb-2">Cedula:</label>
-            <input type="number" step="1" class="form-input" id="cedula"pattern="[a-zA-Z0-9._%+-]" title="Ingresa la cedula" disabled aria-disabled="true" value="<?php echo $res['cedula']?>">
-            <input type="hidden"  value="<?php echo $res['cedula']?>"name="cedula">
+            <div>
+              <label for="cedula" class="text-gray-800 text-sm font-medium inline-block mb-2">Cedula:</label>
+              <div class="grid grid-cols-2 grid-40-full">
+                <div class="short-select">
+                  <select id="input-tipoDocumento" class="form-input w-40" name="tipoDocumento" required autofocus title="Tipo de Documento">
+                    <option value='V' <?php if ($res['tipoDocumento'] == "V") echo 'selected'; ?> >V - Venezolano </option>
+                    <option value='E' <?php if ($res['tipoDocumento'] == "E") echo 'selected'; ?> >E - Extranjero</option>
+                    <option value='P' <?php if ($res['tipoDocumento'] == "P") echo 'selected'; ?> >P - Pasaporte</option>
+                  </select>
+                </div>
+                <input type="text" class="form-input" id="cedula" title="Ingresa la cedula" disabled aria-disabled="true" value="<?php echo ($res['TipoDocumento'] ?? "V") . $res['cedula'] ?>">
+                <input type="hidden" value="<?php echo $res['cedula'] ?>" name="cedula">
+              </div>
+            </div>
           </div>
           <div>
             <label for="input-nombre" class="text-gray-800 text-sm font-medium inline-block mb-2">Nombre:</label>

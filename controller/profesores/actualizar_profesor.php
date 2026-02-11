@@ -12,6 +12,7 @@ try {
       'telefono' => utils::sanear($_POST['telefono']),
       'email' => utils::sanear($_POST['correo']),
       'nacionalidad' => utils::sanear($_POST['nacionalidad']),
+      'tipoDocumento' => utils::sanear($_POST['tipoDocumento']),
     ];
     utils::vacia($datos);
     //registrar Profesor
